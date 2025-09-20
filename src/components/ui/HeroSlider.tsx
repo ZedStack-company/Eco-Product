@@ -1,10 +1,10 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+  CarouselApi,
 } from "./carousel";
 import heroForest from '../../assets/hero-forest.jpg';
 import productsHero from '../../assets/products-hero.jpg';
@@ -51,10 +51,51 @@ const slides: Slide[] = [
 ];
 
 const HeroSlider = () => {
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [progress, setProgress] = useState(0);
+
+  const SLIDE_DURATION = 5000; // 5 seconds per slide
+
+  useEffect(() => {
+    if (!api) return;
+
+    setCurrent(api.selectedScrollSnap());
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+      setProgress(0);
+    });
+  }, [api]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          if (api) {
+            api.scrollNext();
+          }
+          return 0;
+        }
+        return prev + (100 / (SLIDE_DURATION / 100));
+      });
+    }, 100);
+
+    return () => clearInterval(timer);
+  }, [api, current]);
+
+  const goToSlide = (index: number) => {
+    if (api) {
+      api.scrollTo(index);
+      setProgress(0);
+    }
+  };
+
   return (
     <div className="relative">
       <Carousel 
         className="w-full"
+        setApi={setApi}
         opts={{
           align: "start",
           loop: true,
@@ -74,7 +115,7 @@ const HeroSlider = () => {
                 }}
               >
                 <div className="container-eco relative z-10">
-                  <div className="max-w-4xl mx-auto">
+                  <div className="max-w-4xl mx-auto animate-fade-in">
                     <h1 className="heading-xl mb-6">{slide.title}</h1>
                     {slide.subtitle && (
                       <p className="text-xl md:text-2xl font-light mb-8 text-white/90">
@@ -93,9 +134,28 @@ const HeroSlider = () => {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="absolute left-8 top-1/2 -translate-y-1/2 bg-white/20 border-white/30 text-white hover:bg-white/30" />
-        <CarouselNext className="absolute right-8 top-1/2 -translate-y-1/2 bg-white/20 border-white/30 text-white hover:bg-white/30" />
       </Carousel>
+
+      {/* Navigation Dots */}
+      <div className="absolute bottom-8 right-8 flex gap-3 z-20">
+        {slides.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => goToSlide(index)}
+            className="relative w-10 h-10 rounded-full bg-white/20 text-white text-sm font-medium hover:bg-white/30 transition-colors"
+          >
+            {index + 1}
+            {current === index && (
+              <div 
+                className="absolute inset-0 rounded-full border-2 border-white"
+                style={{
+                  background: `conic-gradient(from 0deg, white ${progress * 3.6}deg, transparent ${progress * 3.6}deg)`
+                }}
+              />
+            )}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
