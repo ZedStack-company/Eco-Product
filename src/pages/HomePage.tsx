@@ -3,10 +3,9 @@ import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { setProducts } from '../store/slices/productsSlice';
 import { mockProducts } from '../data/products';
-import HeroSection from '../components/ui/HeroSection';
+import HeroSlider from '../components/ui/HeroSlider';
 import ProductGrid from '../components/ui/ProductGrid';
 import SectionTitle from '../components/ui/SectionTitle';
-import heroForest from '../assets/hero-forest.jpg';
 import productsHero from '../assets/products-hero.jpg';
 import ecoHome from '../assets/eco-home.jpg';
 
@@ -22,19 +21,8 @@ const HomePage = () => {
 
   return (
     <div>
-      {/* Hero Section */}
-      <HeroSection
-        backgroundImage={heroForest}
-        title=""
-        parallax={true}
-        className="image-zoom-slow"
-      >
-        <div className="text-center">
-          <Link to="/shop" className="eco-button-inverse">
-            SHOP NOW
-          </Link>
-        </div>
-      </HeroSection>
+      {/* Hero Slider */}
+      <HeroSlider />
 
       {/* Best Sellers Section */}
       <section className="section-eco">
