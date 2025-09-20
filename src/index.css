@@ -2,57 +2,77 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* ECO Theme Design System - Earthy, sustainable, nature-inspired palette */
 
 @layer base {
   :root {
+    /* Core Colors */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
+    --foreground: 0 0% 13%;
+    
+    /* Surface Colors */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: 0 0% 13%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --popover-foreground: 0 0% 13%;
+    
+    /* Brand Colors - Deep forest green */
+    --primary: 150 30% 25%;
+    --primary-foreground: 0 0% 98%;
+    --primary-hover: 150 35% 20%;
+    
+    /* Secondary - Warm sage */
+    --secondary: 120 15% 85%;
+    --secondary-foreground: 0 0% 13%;
+    --secondary-hover: 120 20% 80%;
+    
+    /* Accent - Earth brown */
+    --accent: 25 25% 65%;
+    --accent-foreground: 0 0% 13%;
+    --accent-hover: 25 30% 55%;
+    
+    /* Muted - Soft neutral */
+    --muted: 60 5% 96%;
+    --muted-foreground: 0 0% 45%;
+    
+    /* Interactive States */
+    --hover-bg: 0 0% 5%;
+    --hover-text: 0 0% 98%;
+    
+    /* Borders & Inputs */
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 150 30% 25%;
+    
+    /* Eco Theme Specific */
+    --forest-green: 150 40% 30%;
+    --sage-green: 120 20% 75%;
+    --earth-brown: 25 35% 45%;
+    --warm-white: 45 20% 98%;
+    --stone-gray: 0 0% 85%;
+    
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(150 30% 25% / 0.9), hsl(25 25% 65% / 0.8));
+    --gradient-section: linear-gradient(180deg, hsl(60 5% 96%), hsl(120 15% 90%));
+    
+    /* Shadows */
+    --shadow-soft: 0 2px 8px hsl(0 0% 0% / 0.08);
+    --shadow-medium: 0 4px 16px hsl(0 0% 0% / 0.12);
+    --shadow-strong: 0 8px 32px hsl(0 0% 0% / 0.16);
+    
+    /* Spacing & Layout */
+    --radius: 0rem;
+    --section-padding: 4rem 0;
+    --container-padding: 0 1rem;
+    
+    /* Typography */
+    --font-heading: 'Inter', system-ui, sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+    
+    /* Animations */
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-medium: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
@@ -101,5 +121,192 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-body);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+}
+
+@layer components {
+  /* ECO Button - Special hover effect: white->black with bottom-to-top animation */
+  .eco-button {
+    @apply relative overflow-hidden bg-background text-foreground border border-foreground px-6 py-3 font-medium tracking-wide uppercase text-sm;
+    transition: color var(--transition-medium);
+  }
+  
+  .eco-button::before {
+    content: '';
+    @apply absolute inset-x-0 bottom-0 h-0 bg-foreground;
+    transition: height var(--transition-medium) cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -1;
+  }
+  
+  .eco-button:hover::before {
+    @apply h-full;
+  }
+  
+  .eco-button:hover {
+    @apply text-background;
+  }
+  
+  /* ECO Button Inverse - Black to white */
+  .eco-button-inverse {
+    @apply relative overflow-hidden bg-foreground text-background border border-foreground px-6 py-3 font-medium tracking-wide uppercase text-sm;
+    transition: color var(--transition-medium);
+  }
+  
+  .eco-button-inverse::before {
+    content: '';
+    @apply absolute inset-x-0 bottom-0 h-0 bg-background;
+    transition: height var(--transition-medium) cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -1;
+  }
+  
+  .eco-button-inverse:hover::before {
+    @apply h-full;
+  }
+  
+  .eco-button-inverse:hover {
+    @apply text-foreground;
+  }
+  
+  /* Image hover effects */
+  .image-swap {
+    @apply relative overflow-hidden;
+  }
+  
+  .image-swap .image-primary {
+    @apply transition-opacity duration-300;
+  }
+  
+  .image-swap .image-secondary {
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+  }
+  
+  .image-swap:hover .image-primary {
+    @apply opacity-0;
+  }
+  
+  .image-swap:hover .image-secondary {
+    @apply opacity-100;
+  }
+  
+  /* Slow zoom effect for hero images */
+  .image-zoom-slow {
+    @apply overflow-hidden;
+  }
+  
+  .image-zoom-slow img {
+    @apply transition-transform ease-out;
+    transition-duration: 3s;
+  }
+  
+  .image-zoom-slow:hover img {
+    @apply scale-110;
+  }
+  
+  /* Parallax scroll effect */
+  .parallax-bg {
+    @apply relative;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  
+  /* Navbar styles */
+  .navbar-eco {
+    @apply bg-background/95 backdrop-blur-sm border-b border-border transition-all duration-300;
+  }
+  
+  /* Container styles */
+  .container-eco {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* Section spacing */
+  .section-eco {
+    padding: var(--section-padding);
+  }
+  
+  /* Typography */
+  .heading-xl {
+    @apply text-4xl md:text-6xl font-light tracking-tight text-foreground;
+  }
+  
+  .heading-lg {
+    @apply text-3xl md:text-4xl font-light tracking-tight text-foreground;
+  }
+  
+  .heading-md {
+    @apply text-xl md:text-2xl font-light tracking-tight text-foreground;
+  }
+  
+  .text-body {
+    @apply text-base leading-relaxed text-muted-foreground;
+  }
+  
+  /* Product card styles */
+  .product-card {
+    @apply cursor-pointer;
+  }
+  
+  .product-card-image {
+    @apply aspect-square mb-4 image-swap;
+  }
+  
+  .product-card-title {
+    @apply text-sm font-medium text-foreground mb-1 hover:text-muted-foreground transition-colors;
+  }
+  
+  .product-card-price {
+    @apply text-sm text-muted-foreground;
+  }
+}
+
+@layer utilities {
+  /* Animation keyframes */
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes zoomOut {
+    from {
+      transform: scale(1.1);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+  
+  /* Utility classes */
+  .animate-slide-up {
+    animation: slideUp var(--transition-medium) ease-out;
+  }
+  
+  .animate-fade-in-up {
+    animation: fadeInUp var(--transition-medium) ease-out;
+  }
+  
+  .animate-zoom-out {
+    animation: zoomOut 3s ease-out;
   }
 }
