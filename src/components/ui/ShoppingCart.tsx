@@ -1,9 +1,11 @@
 import { X, Plus, Minus } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { toggleCart, removeFromCart, updateQuantity } from '../../store/slices/cartSlice';
+import { useNavigate } from 'react-router-dom';
 
 const ShoppingCart = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { items, isOpen, total } = useAppSelector(state => state.cart);
 
   const handleClose = () => {
@@ -20,6 +22,11 @@ const ShoppingCart = () => {
     } else {
       dispatch(updateQuantity({ id, quantity }));
     }
+  };
+
+  const handleCheckout = () => {
+    dispatch(toggleCart());
+    navigate('/checkout');
   };
 
   if (!isOpen) return null;
@@ -101,7 +108,10 @@ const ShoppingCart = () => {
                 <span className="font-medium">Total:</span>
                 <span className="font-medium">${total.toFixed(2)}</span>
               </div>
-              <button className="eco-button w-full mb-2">
+              <button 
+                onClick={handleCheckout}
+                className="eco-button w-full mb-2"
+              >
                 CHECKOUT
               </button>
               <button
