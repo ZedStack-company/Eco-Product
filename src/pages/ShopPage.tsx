@@ -1,131 +1,106 @@
-import { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../hooks';
-import { setProducts, setSelectedCategory } from '../store/slices/productsSlice';
-import { mockProducts } from '../data/products';
-import ProductGrid from '../components/ui/ProductGrid';
-import SectionTitle from '../components/ui/SectionTitle';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import PageSection from '@/components/layout/PageSection';
+import ProductGrid from '@/components/product/ProductGrid';
+import ProductFilters, { FilterState } from '@/components/product/ProductFilters';
+import SectionTitle from '@/components/ui/SectionTitle';
+import { useProducts, useCategories } from '@/hooks/useProducts';
+import { useCart } from '@/hooks/useCart';
 import productsHero from '../assets/products-hero.jpg';
 
 const ShopPage = () => {
-  const dispatch = useAppDispatch();
-  const { items: products, categories, selectedCategory } = useAppSelector(state => state.products);
-  const [sortBy, setSortBy] = useState('name');
-
-  useEffect(() => {
-    dispatch(setProducts(mockProducts));
-  }, [dispatch]);
-
-  const filteredProducts = selectedCategory && selectedCategory !== 'All'
-    ? products.filter(product => product.category === selectedCategory)
-    : products;
-
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    switch (sortBy) {
-      case 'price-low':
-        return a.price - b.price;
-      case 'price-high':
-        return b.price - a.price;
-      case 'name':
-      default:
-        return a.name.localeCompare(b.name);
-    }
+  const { categories } = useCategories();
+  const [filters, setFilters] = useState<FilterState>({
+    category: null,
+    sortBy: 'name',
+    searchQuery: '',
+    priceRange: [0, 1000],
+    inStock: null,
   });
+
+  const { products, loading } = useProducts({
+    initialFilters: filters,
+  });
+
+  const { addToCart } = useCart();
+
+  const handleFiltersChange = (newFilters: FilterState) => {
+    setFilters(newFilters);
+  };
+
+  const recentlyViewedProducts = products.slice(0, 2);
 
   return (
     <div>
       {/* Hero Section */}
-      <section 
-        className="relative h-64 flex items-center justify-center text-center text-white"
-        style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${productsHero})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
-        <div className="container-eco">
-          <h1 className="heading-lg">Popular Products</h1>
+      <PageSection padding="xl" className="relative overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
+          style={{ backgroundImage: `url(${productsHero})` }}
+        />
+        <div className="relative z-10 text-center">
+          <h1 className="heading-xl mb-6">Shop All Products</h1>
+          <p className="text-body max-w-2xl mx-auto">
+            Discover our complete collection of sustainable, eco-friendly products 
+            designed to help you live more consciously and beautifully.
+          </p>
         </div>
-      </section>
-
-      {/* Filters Section */}
-      <section className="py-8 bg-muted/30">
-        <div className="container-eco">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex flex-wrap gap-4">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => dispatch(setSelectedCategory(category === 'All' ? null : category))}
-                  className={`px-4 py-2 text-sm font-medium tracking-wide uppercase transition-colors ${
-                    (selectedCategory === category) || (category === 'All' && !selectedCategory)
-                      ? 'text-foreground border-b-2 border-foreground'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-            
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2 border border-border bg-background text-foreground focus:outline-none focus:border-foreground"
-            >
-              <option value="name">Sort by Name</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-            </select>
-          </div>
-        </div>
-      </section>
+      </PageSection>
 
       {/* Products Section */}
-      <section className="section-eco">
-        <div className="container-eco">
-          <SectionTitle 
-            title={`${selectedCategory || 'All'} Products`}
-            subtitle={`Showing ${sortedProducts.length} products`}
-            className="mb-16"
+      <PageSection>
+        <div className="space-y-8">
+          {/* Filters */}
+          <ProductFilters
+            categories={categories}
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            showSearch={true}
+            showStockFilter={true}
           />
-          
-          {sortedProducts.length > 0 ? (
-            <ProductGrid products={sortedProducts} />
-          ) : (
-            <div className="text-center py-16">
-              <p className="text-muted-foreground">No products found in this category.</p>
-            </div>
-          )}
-        </div>
-      </section>
 
-      {/* Recently Viewed Section */}
-      <section className="section-eco bg-muted/30">
-        <div className="container-eco">
-          <SectionTitle 
-            title="Recently viewed" 
-            className="mb-16"
+          {/* Products Grid */}
+          <ProductGrid
+            products={products}
+            loading={loading}
+            onAddToCart={addToCart}
+            emptyTitle="No products found"
+            emptyDescription="Try adjusting your filters or search terms to find what you're looking for."
+            emptyAction={
+              <Button 
+                variant="outline" 
+                onClick={() => handleFiltersChange({
+                  category: null,
+                  sortBy: 'name',
+                  searchQuery: '',
+                  priceRange: [0, 1000],
+                  inStock: null,
+                })}
+              >
+                Clear All Filters
+              </Button>
+            }
           />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {products.slice(0, 2).map((product) => (
-              <div key={product.id} className="bg-background p-6">
-                <div className="flex gap-6">
-                  <img 
-                    src={product.image} 
-                    alt={product.name} 
-                    className="w-24 h-24 object-cover"
-                  />
-                  <div>
-                    <h3 className="font-medium mb-2">{product.name}</h3>
-                    <p className="text-muted-foreground text-sm mb-2">${product.price}</p>
-                    <button className="eco-button">VIEW PRODUCT</button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
-      </section>
+      </PageSection>
+
+      {/* Recently Viewed */}
+      {recentlyViewedProducts.length > 0 && (
+        <PageSection background="muted">
+          <div className="text-center mb-12">
+            <SectionTitle 
+              title="Recently viewed" 
+              subtitle="Products you've recently looked at"
+            />
+          </div>
+          
+          <ProductGrid
+            products={recentlyViewedProducts}
+            onAddToCart={addToCart}
+            className="max-w-4xl mx-auto"
+          />
+        </PageSection>
+      )}
     </div>
   );
 };

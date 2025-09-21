@@ -1,16 +1,15 @@
-import { Product } from '../../store/slices/productsSlice';
-import { useAppDispatch } from '../../hooks';
-import { addToCart } from '../../store/slices/cartSlice';
+import { Product } from '@/types/product';
+import { useCart } from '@/hooks/useCart';
 
 interface ProductCardProps {
   product: Product;
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
-  const dispatch = useAppDispatch();
+  const { addToCart } = useCart();
 
   const handleAddToCart = () => {
-    dispatch(addToCart(product));
+    addToCart(product);
   };
 
   return (

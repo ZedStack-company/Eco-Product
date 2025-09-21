@@ -1,4 +1,4 @@
-import { Product } from '../store/slices/productsSlice';
+import { Product } from '@/types/product';
 import productCandles from '../assets/product-candles.jpg';
 import productUtensils from '../assets/product-utensils.jpg';
 import productOils from '../assets/product-oils.jpg';
