@@ -3,15 +3,19 @@ import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { setProducts } from '../store/slices/productsSlice';
 import { mockProducts } from '../data/products';
+import { useCart } from '../hooks/useCart';
 import HeroSlider from '../components/ui/HeroSlider';
-import ProductGrid from '../components/ui/ProductGrid';
+import ProductGrid from '../components/product/ProductGrid';
 import SectionTitle from '../components/ui/SectionTitle';
 import productsHero from '../assets/products-hero.jpg';
 import ecoHome from '../assets/eco-home.jpg';
+import blogAutumn from '../assets/blog-autumn.jpg';
+import blogCrafts from '../assets/blog-crafts.jpg';
 
 const HomePage = () => {
   const dispatch = useAppDispatch();
   const products = useAppSelector(state => state.products.items);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     dispatch(setProducts(mockProducts));
@@ -31,7 +35,7 @@ const HomePage = () => {
             title="Best sellers" 
             className="mb-16"
           />
-          <ProductGrid products={featuredProducts.slice(0, 4)} />
+          <ProductGrid products={featuredProducts.slice(0, 4)} onAddToCart={addToCart} />
         </div>
       </section>
 
@@ -42,7 +46,7 @@ const HomePage = () => {
             title="BESTSELLERS" 
             className="mb-16"
           />
-          <ProductGrid products={featuredProducts} />
+          <ProductGrid products={featuredProducts} onAddToCart={addToCart} />
           <div className="text-center mt-12">
             <Link to="/shop" className="eco-button">
               VIEW ALL
@@ -55,7 +59,7 @@ const HomePage = () => {
       <section 
         className="relative py-24 text-center text-white"
         style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${productsHero})`,
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${blogAutumn})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
@@ -81,8 +85,8 @@ const HomePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
             <div className="image-zoom-slow">
               <img 
-                src={ecoHome} 
-                alt="Eco home interior" 
+                src={blogCrafts} 
+                alt="Handcrafted artisanal items" 
                 className="w-full h-auto"
               />
             </div>
