@@ -16,6 +16,8 @@ import CheckoutPage from './pages/CheckoutPage';
 import UnderTwentyPage from './pages/collections/UnderTwentyPage';
 import SeasonalSalePage from './pages/collections/SeasonalSalePage';
 import NewArrivalsPage from './pages/collections/NewArrivalsPage';
+import FeaturedPage from './pages/collections/FeaturedPage';
+import CollectionsPage from './pages/collections/CollectionsPage';
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +37,8 @@ const App = () => (
               <Route path="collections/under-20" element={<UnderTwentyPage />} />
               <Route path="collections/seasonal-sale" element={<SeasonalSalePage />} />
               <Route path="collections/new-arrivals" element={<NewArrivalsPage />} />
+              <Route path="collections/featured" element={<FeaturedPage />} />
+              <Route path="collections" element={<CollectionsPage />} />
               <Route path="about" element={<AboutPage />} />
               <Route path="journal" element={<JournalPage />} />
               <Route path="theme-features" element={<ThemeFeaturesPage />} />

@@ -28,8 +28,22 @@ const NewArrivalsPage = () => {
     setFilters(newFilters);
   };
 
-  // Show latest products (reverse order for "newest")
-  const newArrivals = [...products].reverse().slice(0, 4);
+  // Expand new arrivals for demo
+  const baseNewProducts = [...products].reverse().slice(0, 3);
+  const expandedNewArrivals = [];
+  
+  for (let i = 0; i < 5; i++) {
+    baseNewProducts.forEach((product, index) => {
+      expandedNewArrivals.push({
+        ...product,
+        id: `new-${product.id}-${i}-${index}`,
+        name: `${product.name} ${i > 0 ? `- New Design ${i + 1}` : ''}`,
+        price: product.price + Math.random() * 10, // Slightly varied prices
+      });
+    });
+  }
+  
+  const newArrivals = expandedNewArrivals.slice(0, 16);
 
   return (
     <div>

@@ -28,8 +28,23 @@ const UnderTwentyPage = () => {
     setFilters(newFilters);
   };
 
-  // Filter products under $20
-  const affordableProducts = products.filter(product => product.price <= 20);
+  // Filter products under $20 and expand with duplicates for demo
+  const baseAffordableProducts = products.filter(product => product.price <= 20);
+  const expandedProducts = [];
+  
+  // Create more variety by duplicating products with slight variations
+  for (let i = 0; i < 5; i++) {
+    baseAffordableProducts.forEach((product, index) => {
+      expandedProducts.push({
+        ...product,
+        id: `${product.id}-${i}-${index}`,
+        name: `${product.name} ${i > 0 ? `- Variant ${i + 1}` : ''}`,
+        price: Math.max(5, product.price - Math.random() * 5), // Ensure under $20
+      });
+    });
+  }
+  
+  const affordableProducts = expandedProducts.slice(0, 24); // Show up to 24 products
 
   return (
     <div>

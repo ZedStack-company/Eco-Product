@@ -22,6 +22,8 @@ const Navbar = () => {
     { name: 'New Arrivals', href: '/collections/new-arrivals' },
     { name: 'Under $20', href: '/collections/under-20' },
     { name: 'Seasonal Sale', href: '/collections/seasonal-sale' },
+    { name: 'Featured', href: '/collections/featured' },
+    { name: 'Collections', href: '/collections' },
   ];
 
   const topSellersDropdownItems = [
@@ -46,7 +48,7 @@ const Navbar = () => {
       <div className="container-eco">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="text-2xl font-light tracking-widest text-foreground">
+          <Link to="/" className="text-2xl font-light tracking-widest text-white group-hover:text-foreground transition-colors">
             ECO
           </Link>
 
@@ -54,7 +56,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-8">
             {/* Shop Dropdown */}
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center text-sm font-medium tracking-wide hover:text-muted-foreground transition-colors text-foreground">
+              <DropdownMenuTrigger className="flex items-center text-sm font-medium tracking-wide hover:text-muted-foreground transition-colors text-white group-hover:text-foreground">
                 SHOP
                 <ChevronDown className="ml-1 h-3 w-3" />
               </DropdownMenuTrigger>
@@ -74,7 +76,7 @@ const Navbar = () => {
 
             {/* Top Sellers Dropdown */}
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center text-sm font-medium tracking-wide hover:text-muted-foreground transition-colors text-foreground">
+              <DropdownMenuTrigger className="flex items-center text-sm font-medium tracking-wide hover:text-muted-foreground transition-colors text-white group-hover:text-foreground">
                 TOP SELLERS
                 <ChevronDown className="ml-1 h-3 w-3" />
               </DropdownMenuTrigger>
@@ -98,7 +100,7 @@ const Navbar = () => {
                 key={item.name}
                 to={item.href}
                 className={`text-sm font-medium tracking-wide hover:text-muted-foreground transition-colors ${
-                  location.pathname === item.href ? 'text-foreground' : 'text-foreground'
+                  location.pathname === item.href ? 'text-white group-hover:text-foreground' : 'text-white group-hover:text-foreground'
                 }`}
               >
                 {item.name}
@@ -108,16 +110,16 @@ const Navbar = () => {
 
           {/* Right side icons */}
           <div className="flex items-center space-x-4">
-            <button className="p-2 hover:text-muted-foreground transition-colors text-foreground">
+            <button className="p-2 hover:text-muted-foreground transition-colors text-white group-hover:text-foreground">
               <Search size={20} />
             </button>
             <button 
               onClick={handleCartClick}
-              className="p-2 hover:text-muted-foreground transition-colors relative text-foreground"
+              className="p-2 hover:text-muted-foreground transition-colors relative text-white group-hover:text-foreground"
             >
               <ShoppingBag size={20} />
               {cartItemsCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-foreground text-background text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-white group-hover:bg-foreground text-foreground group-hover:text-background text-xs rounded-full h-5 w-5 flex items-center justify-center transition-colors">
                   {cartItemsCount}
                 </span>
               )}
@@ -125,7 +127,7 @@ const Navbar = () => {
 
             {/* Mobile menu button */}
             <button
-              className="md:hidden p-2 text-foreground"
+              className="md:hidden p-2 text-white group-hover:text-foreground transition-colors"
               onClick={() => setIsOpen(!isOpen)}
             >
               {isOpen ? <X size={20} /> : <Menu size={20} />}

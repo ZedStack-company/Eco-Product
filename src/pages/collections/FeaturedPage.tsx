@@ -6,9 +6,9 @@ import ProductFilters, { FilterState } from '@/components/product/ProductFilters
 import SectionTitle from '@/components/ui/SectionTitle';
 import { useProducts, useCategories } from '@/hooks/useProducts';
 import { useCart } from '@/hooks/useCart';
-import blogCrafts from '../../assets/blog-crafts.jpg';
+import productBlanket from '../../assets/product-blanket.jpg';
 
-const SeasonalSalePage = () => {
+const FeaturedPage = () => {
   const { categories } = useCategories();
   const [filters, setFilters] = useState<FilterState>({
     category: null,
@@ -28,22 +28,8 @@ const SeasonalSalePage = () => {
     setFilters(newFilters);
   };
 
-  // Expand seasonal products for demo
-  const baseSeasonalProducts = products.slice(0, 4);
-  const expandedSeasonalProducts = [];
-  
-  for (let i = 0; i < 4; i++) {
-    baseSeasonalProducts.forEach((product, index) => {
-      expandedSeasonalProducts.push({
-        ...product,
-        id: `seasonal-${product.id}-${i}-${index}`,
-        name: `${product.name} ${i > 0 ? `- Holiday Edition ${i + 1}` : ''}`,
-        price: product.price * (0.7 + Math.random() * 0.3), // Sale prices
-      });
-    });
-  }
-  
-  const seasonalProducts = expandedSeasonalProducts.slice(0, 20);
+  // Featured products (top picks)
+  const featuredProducts = products.slice(0, 8);
 
   return (
     <div>
@@ -51,17 +37,17 @@ const SeasonalSalePage = () => {
       <PageSection padding="xl" className="relative overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25"
-          style={{ backgroundImage: `url(${blogCrafts})` }}
+          style={{ backgroundImage: `url(${productBlanket})` }}
         />
         <div className="relative z-10 text-center">
-          <h1 className="heading-xl mb-6">Seasonal Sale</h1>
+          <h1 className="heading-xl mb-6">Featured Products</h1>
           <p className="text-body max-w-2xl mx-auto">
-            Limited time offers on handcrafted seasonal items. 
-            Embrace the season with our curated collection of sustainable goods.
+            Our handpicked selection of the finest sustainable products. 
+            Curated for quality, crafted with care.
           </p>
           <div className="mt-6">
-            <span className="bg-accent text-accent-foreground px-4 py-2 text-sm font-medium uppercase tracking-wide">
-              Up to 30% Off
+            <span className="bg-primary text-primary-foreground px-4 py-2 text-sm font-medium uppercase tracking-wide">
+              Editor's Choice
             </span>
           </div>
         </div>
@@ -72,8 +58,8 @@ const SeasonalSalePage = () => {
         <div className="space-y-8">
           <div className="text-center">
             <SectionTitle 
-              title="Seasonal Favorites" 
-              subtitle="Handpicked items perfect for the current season"
+              title="Hand-Selected Favorites" 
+              subtitle="Premium products chosen by our sustainability experts"
             />
           </div>
 
@@ -86,11 +72,11 @@ const SeasonalSalePage = () => {
           />
 
           <ProductGrid
-            products={seasonalProducts}
+            products={featuredProducts}
             loading={loading}
             onAddToCart={addToCart}
-            emptyTitle="No seasonal products available"
-            emptyDescription="Check back soon for new seasonal offerings."
+            emptyTitle="No featured products available"
+            emptyDescription="Check back soon for our latest featured selections."
             emptyAction={
               <Button 
                 variant="outline" 
@@ -102,27 +88,40 @@ const SeasonalSalePage = () => {
                   inStock: null,
                 })}
               >
-                View All Products
+                Browse All Products
               </Button>
             }
           />
         </div>
       </PageSection>
 
-      {/* Sale Banner */}
+      {/* Why Featured Section */}
       <PageSection background="muted" padding="lg">
-        <div className="text-center">
-          <h3 className="heading-md mb-4">Don't Miss Out</h3>
+        <div className="text-center max-w-3xl mx-auto">
+          <h3 className="heading-md mb-4">Why These Products?</h3>
           <p className="text-body mb-6">
-            Sale ends soon. Shop now to save on your favorite sustainable products.
+            Each featured product is carefully selected based on sustainability impact, 
+            quality craftsmanship, and customer satisfaction. These are the items our 
+            community loves most.
           </p>
-          <Button size="lg" className="eco-button">
-            Shop Sale Now
-          </Button>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+            <div className="text-center">
+              <h4 className="font-medium mb-2">Sustainability</h4>
+              <p className="text-sm text-muted-foreground">Eco-friendly materials and ethical production</p>
+            </div>
+            <div className="text-center">
+              <h4 className="font-medium mb-2">Quality</h4>
+              <p className="text-sm text-muted-foreground">Durable, well-made products that last</p>
+            </div>
+            <div className="text-center">
+              <h4 className="font-medium mb-2">Community Loved</h4>
+              <p className="text-sm text-muted-foreground">Top-rated by our eco-conscious customers</p>
+            </div>
+          </div>
         </div>
       </PageSection>
     </div>
   );
 };
 
-export default SeasonalSalePage;
+export default FeaturedPage;
