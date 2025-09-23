@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { setProducts } from '../store/slices/productsSlice';
-import { mockProducts } from '../data/products';
 import { useCart } from '../hooks/useCart';
+import { useShopProducts } from '../hooks/useShopProducts';
 import HeroSlider from '../components/ui/HeroSlider';
 import ProductGrid from '../components/product/ProductGrid';
 import SectionTitle from '../components/ui/SectionTitle';
@@ -14,14 +14,9 @@ import blogCrafts from '../assets/blog-crafts.jpg';
 
 const HomePage = () => {
   const dispatch = useAppDispatch();
-  const products = useAppSelector(state => state.products.items);
   const { addToCart } = useCart();
-
-  useEffect(() => {
-    dispatch(setProducts(mockProducts));
-  }, [dispatch]);
-
-  const featuredProducts = products.slice(0, 8);
+  const { products: featuredProducts } = useShopProducts('Featured', 8);
+  const { products: bestSellers } = useShopProducts('Top Sellers', 4);
 
   return (
     <div>
@@ -35,7 +30,7 @@ const HomePage = () => {
             title="Best sellers" 
             className="mb-16"
           />
-          <ProductGrid products={featuredProducts.slice(0, 4)} onAddToCart={addToCart} />
+          <ProductGrid products={bestSellers} onAddToCart={addToCart} />
         </div>
       </section>
 

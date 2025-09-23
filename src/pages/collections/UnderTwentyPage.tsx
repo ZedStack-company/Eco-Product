@@ -4,12 +4,16 @@ import PageSection from '@/components/layout/PageSection';
 import ProductGrid from '@/components/product/ProductGrid';
 import ProductFilters, { FilterState } from '@/components/product/ProductFilters';
 import SectionTitle from '@/components/ui/SectionTitle';
-import { useProducts, useCategories } from '@/hooks/useProducts';
+import { useCategories } from '@/hooks/useProducts';
+import { useShopProducts } from '@/hooks/useShopProducts';
 import { useCart } from '@/hooks/useCart';
 import blogAutumn from '../../assets/blog-autumn.jpg';
 
 const UnderTwentyPage = () => {
   const { categories } = useCategories();
+  const { products, loading } = useShopProducts('Under $20');
+  const { addToCart } = useCart();
+
   const [filters, setFilters] = useState<FilterState>({
     category: null,
     sortBy: 'price',
@@ -18,33 +22,11 @@ const UnderTwentyPage = () => {
     inStock: null,
   });
 
-  const { products, loading } = useProducts({
-    initialFilters: filters,
-  });
-
-  const { addToCart } = useCart();
-
   const handleFiltersChange = (newFilters: FilterState) => {
     setFilters(newFilters);
   };
 
-  // Filter products under $20 and expand with duplicates for demo
-  const baseAffordableProducts = products.filter(product => product.price <= 20);
-  const expandedProducts = [];
-  
-  // Create more variety by duplicating products with slight variations
-  for (let i = 0; i < 5; i++) {
-    baseAffordableProducts.forEach((product, index) => {
-      expandedProducts.push({
-        ...product,
-        id: `${product.id}-${i}-${index}`,
-        name: `${product.name} ${i > 0 ? `- Variant ${i + 1}` : ''}`,
-        price: Math.max(5, product.price - Math.random() * 5), // Ensure under $20
-      });
-    });
-  }
-  
-  const affordableProducts = expandedProducts.slice(0, 24); // Show up to 24 products
+  // Remove old expansion logic, use products directly from Supabase
 
   return (
     <div>
@@ -82,7 +64,7 @@ const UnderTwentyPage = () => {
           />
 
           <ProductGrid
-            products={affordableProducts}
+            products={products}
             loading={loading}
             onAddToCart={addToCart}
             emptyTitle="No products found under $20"
