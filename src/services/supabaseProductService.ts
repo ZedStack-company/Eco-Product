@@ -4,7 +4,7 @@ import { ProductFormData, ProductFilters as AdminFilters } from '@/types/admin';
 
 class SupabaseProductService {
   async getAllProducts(filters?: AdminFilters): Promise<Product[]> {
-    let query = supabase
+    let query = (supabase as any)
       .from('products')
       .select('*')
       .order('created_at', { ascending: false });
@@ -45,7 +45,7 @@ class SupabaseProductService {
   }
 
   async getProductsByCategory(category: string, limit?: number): Promise<Product[]> {
-    let query = supabase
+    let query = (supabase as any)
       .from('products')
       .select('*')
       .eq('in_stock', true);
@@ -80,7 +80,7 @@ class SupabaseProductService {
       imageUrl = await this.uploadImage(productData.image);
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('products')
       .insert([{
         name: productData.name,
@@ -128,7 +128,7 @@ class SupabaseProductService {
       updateData.image_url = imageUrl;
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('products')
       .update(updateData)
       .eq('id', id)
@@ -144,7 +144,7 @@ class SupabaseProductService {
   }
 
   async deleteProduct(id: string): Promise<boolean> {
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('products')
       .delete()
       .eq('id', id);

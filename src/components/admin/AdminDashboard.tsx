@@ -1,60 +1,77 @@
 import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LogOut, Plus } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { useAdmin } from '@/hooks/useAdmin';
 import { useSupabaseProducts } from '@/hooks/useSupabaseProducts';
 import { Product } from '@/types/product';
-import { ProductFilters } from '@/types/admin';
+import { ProductFormData, ProductFilters } from '@/types/admin';
 import ProductForm from './ProductForm';
 import ProductTable from './ProductTable';
 import { toast } from 'sonner';
+import { LogOut, Plus, Package, TrendingUp, DollarSign, Eye } from 'lucide-react';
 
 const AdminDashboard = () => {
-  const { currentAdmin, logout } = useAdmin();
+  const { logout } = useAdmin();
+  const [showProductForm, setShowProductForm] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [filters, setFilters] = useState<ProductFilters>({
     search: '',
-    category: 'All',
+    category: '',
     priceMin: 0,
     priceMax: 1000,
     tags: '',
     isTopSeller: null
   });
-  
-  const { products, loading, addProduct, updateProduct, deleteProduct, fetchProducts } = useSupabaseProducts(filters);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [showForm, setShowForm] = useState(false);
-  
-  const handleAddProduct = async (productData: any) => {
-    const success = await addProduct(productData);
-    if (success) {
-      setShowForm(false);
+
+  const { 
+    products, 
+    loading, 
+    error, 
+    addProduct, 
+    updateProduct, 
+    deleteProduct, 
+    fetchProducts 
+  } = useSupabaseProducts(filters);
+
+  const handleAddProduct = async (productData: ProductFormData) => {
+    try {
+      await addProduct(productData);
+      toast.success('Product added successfully!');
+      setShowProductForm(false);
+    } catch (error) {
+      toast.error('Failed to add product');
     }
   };
 
-  const handleUpdateProduct = async (productData: any) => {
-    if (selectedProduct) {
-      const success = await updateProduct(selectedProduct.id, productData);
-      if (success) {
-        setSelectedProduct(null);
-        setShowForm(false);
-      }
+  const handleUpdateProduct = async (productData: ProductFormData) => {
+    if (!editingProduct) return;
+    
+    try {
+      await updateProduct(editingProduct.id, productData);
+      toast.success('Product updated successfully!');
+      setEditingProduct(null);
+      setShowProductForm(false);
+    } catch (error) {
+      toast.error('Failed to update product');
     }
   };
 
   const handleDeleteProduct = async (productId: string) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
-      const success = await deleteProduct(productId);
-      if (success) {
-        toast.success('Product deleted successfully');
+      try {
+        await deleteProduct(productId);
+        toast.success('Product deleted successfully!');
+      } catch (error) {
+        toast.error('Failed to delete product');
       }
     }
   };
 
   const handleEditProduct = (product: Product) => {
-    setSelectedProduct(product);
-    setShowForm(true);
+    setEditingProduct(product);
+    setShowProductForm(true);
   };
 
   const handleFilter = (newFilters: ProductFilters) => {
@@ -64,31 +81,32 @@ const AdminDashboard = () => {
 
   const handleLogout = () => {
     logout();
-    window.location.reload(); // Refresh to show login modal
+    toast.success('Logged out successfully');
   };
+
+  // Calculate stats
+  const totalProducts = products.length;
+  const inStockProducts = products.filter(p => p.inStock).length;
+  const topSellerProducts = products.filter(p => p.tags?.includes('top-seller')).length;
+  const averagePrice = products.length > 0 
+    ? products.reduce((sum, p) => sum + p.price, 0) / products.length 
+    : 0;
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-              <p className="text-muted-foreground">
-                Welcome back, {currentAdmin?.username}
-              </p>
-            </div>
-            <Button variant="outline" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
+      <div className="container mx-auto py-8">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+            <p className="text-muted-foreground">Manage your products and store</p>
           </div>
+          <Button onClick={handleLogout} variant="outline">
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
+          </Button>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="products" className="space-y-6">
           <TabsList>
             <TabsTrigger value="products">Products</TabsTrigger>
@@ -99,96 +117,116 @@ const AdminDashboard = () => {
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Total Products
-                  </CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+                  <Package className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{products.length}</div>
+                  <div className="text-2xl font-bold">{totalProducts}</div>
                 </CardContent>
               </Card>
-              
+
               <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    In Stock
-                  </CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">In Stock</CardTitle>
+                  <Eye className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
-                    {products.filter(p => p.inStock).length}
-                  </div>
+                  <div className="text-2xl font-bold">{inStockProducts}</div>
                 </CardContent>
               </Card>
-              
+
               <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Featured
-                  </CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Top Sellers</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
-                    {products.filter(p => p.featured).length}
-                  </div>
+                  <div className="text-2xl font-bold">{topSellerProducts}</div>
                 </CardContent>
               </Card>
-              
+
               <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Top Sellers
-                  </CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Avg. Price</CardTitle>
+                  <DollarSign className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
-                    {products.filter(p => p.tags?.includes('top-seller')).length}
-                  </div>
+                  <div className="text-2xl font-bold">${averagePrice.toFixed(2)}</div>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Add Product Button */}
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold">Product Management</h2>
-              <Button onClick={() => { setSelectedProduct(null); setShowForm(true); }}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Product
-              </Button>
-            </div>
-
-            {/* Product Form */}
-            {showForm && (
-              <ProductForm
-                product={selectedProduct}
-                onSubmit={selectedProduct ? handleUpdateProduct : handleAddProduct}
-                onCancel={() => { setShowForm(false); setSelectedProduct(null); }}
-              />
-            )}
-
-            {/* Products Table */}
-            <ProductTable
-              products={products}
-              loading={loading}
-              onEdit={handleEditProduct}
-              onDelete={handleDeleteProduct}
-              onFilter={handleFilter}
-            />
+            {/* Product Management */}
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle>Product Management</CardTitle>
+                    <CardDescription>
+                      Add, edit, and manage your product catalog
+                    </CardDescription>
+                  </div>
+                  <Button onClick={() => setShowProductForm(true)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Product
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {error && (
+                  <div className="text-red-500 mb-4">
+                    Error: {error}
+                  </div>
+                )}
+                
+                <ProductTable
+                  products={products}
+                  loading={loading}
+                  onEdit={handleEditProduct}
+                  onDelete={handleDeleteProduct}
+                  onFilter={handleFilter}
+                />
+              </CardContent>
+            </Card>
           </TabsContent>
 
-          <TabsContent value="analytics">
+          <TabsContent value="analytics" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Analytics</CardTitle>
+                <CardDescription>
+                  View your store performance and insights
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Analytics features coming soon...</p>
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">
+                    Analytics dashboard coming soon...
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
-      </main>
+      </div>
+
+      {/* Product Form Modal */}
+      {showProductForm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-background rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <ProductForm
+              product={editingProduct}
+              onSubmit={editingProduct ? handleUpdateProduct : handleAddProduct}
+              onCancel={() => {
+                setShowProductForm(false);
+                setEditingProduct(null);
+              }}
+              isLoading={loading}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

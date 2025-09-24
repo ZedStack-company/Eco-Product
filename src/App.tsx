@@ -39,6 +39,7 @@ const App = () => {
 
   const handleContinueShopping = () => {
     setUserMode('shopping');
+    setShowLoginModal(false);
   };
 
   // If admin is authenticated, show only admin interface

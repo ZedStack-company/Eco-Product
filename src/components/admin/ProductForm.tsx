@@ -3,12 +3,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CATEGORIES, ProductFormData } from '@/types/admin';
+import { Switch } from '@/components/ui/switch';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Product } from '@/types/product';
-import { toast } from 'sonner';
+import { ProductFormData, CATEGORIES } from '@/types/admin';
+import { X, Upload, Plus } from 'lucide-react';
 
 interface ProductFormProps {
   product?: Product | null;
@@ -29,8 +30,9 @@ const ProductForm = ({ product, onSubmit, onCancel, isLoading }: ProductFormProp
     inStock: true,
     featured: false
   });
+
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [tagInput, setTagInput] = useState('');
+  const [newTag, setNewTag] = useState('');
 
   useEffect(() => {
     if (product) {
@@ -39,36 +41,56 @@ const ProductForm = ({ product, onSubmit, onCancel, isLoading }: ProductFormProp
         price: product.price,
         description: product.description || '',
         category: product.category,
-        subCategory: '', // We'll need to determine this from the product data
+        subCategory: '',
         tags: product.tags || [],
-        isTopSeller: false, // We'll need to determine this from the product data
+        isTopSeller: product.tags?.includes('top-seller') || false,
         inStock: product.inStock,
         featured: product.featured || false
       });
-      setTagInput((product.tags || []).join(', '));
     }
   }, [product]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.category || formData.price <= 0) {
-      toast.error('Please fill in all required fields');
+    if (!formData.name.trim()) {
+      alert('Product name is required');
+      return;
+    }
+    
+    if (formData.price <= 0) {
+      alert('Price must be greater than 0');
+      return;
+    }
+    
+    if (!formData.category) {
+      alert('Category is required');
       return;
     }
 
     const submitData: ProductFormData = {
       ...formData,
-      image: imageFile || undefined,
-      tags: tagInput.split(',').map(tag => tag.trim()).filter(tag => tag)
+      image: imageFile || undefined
     };
 
-    try {
-      await onSubmit(submitData);
-      toast.success(product ? 'Product updated successfully' : 'Product added successfully');
-    } catch (error) {
-      toast.error('Failed to save product');
+    await onSubmit(submitData);
+  };
+
+  const handleAddTag = () => {
+    if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        tags: [...prev.tags, newTag.trim()]
+      }));
+      setNewTag('');
     }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter(tag => tag !== tagToRemove)
+    }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,14 +100,22 @@ const ProductForm = ({ product, onSubmit, onCancel, isLoading }: ProductFormProp
     }
   };
 
-  const categories = Object.keys(CATEGORIES);
-  const subCategories = CATEGORIES[formData.category as keyof typeof CATEGORIES] || [];
-
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{product ? 'Edit Product' : 'Add New Product'}</CardTitle>
+        <div className="flex justify-between items-center">
+          <div>
+            <CardTitle>{product ? 'Edit Product' : 'Add New Product'}</CardTitle>
+            <CardDescription>
+              {product ? 'Update product information' : 'Enter product details'}
+            </CardDescription>
+          </div>
+          <Button variant="ghost" size="sm" onClick={onCancel}>
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
       </CardHeader>
+      
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -95,19 +125,21 @@ const ProductForm = ({ product, onSubmit, onCancel, isLoading }: ProductFormProp
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="Enter product name"
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="price">Price *</Label>
               <Input
                 id="price"
                 type="number"
-                min="0"
                 step="0.01"
+                min="0"
                 value={formData.price}
                 onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
+                placeholder="0.00"
                 required
               />
             </div>
@@ -119,32 +151,42 @@ const ProductForm = ({ product, onSubmit, onCancel, isLoading }: ProductFormProp
               id="description"
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              placeholder="Product description"
               rows={3}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="image">Product Image</Label>
-            <Input
-              id="image"
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-            />
+            <div className="flex items-center space-x-2">
+              <Input
+                id="image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+              />
+              <Upload className="h-4 w-4 text-muted-foreground" />
+            </div>
+            {imageFile && (
+              <p className="text-sm text-muted-foreground">
+                Selected: {imageFile.name}
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="category">Category *</Label>
-              <Select 
-                value={formData.category} 
-                onValueChange={(value) => setFormData(prev => ({ ...prev, category: value, subCategory: '' }))}
+              <Select
+                value={formData.category}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map(category => (
+                  {Object.keys(CATEGORIES).map(category => (
                     <SelectItem key={category} value={category}>
                       {category}
                     </SelectItem>
@@ -153,64 +195,82 @@ const ProductForm = ({ product, onSubmit, onCancel, isLoading }: ProductFormProp
               </Select>
             </div>
 
-            {subCategories.length > 0 && (
-              <div className="space-y-2">
-                <Label htmlFor="subCategory">Sub-category</Label>
-                <Select 
-                  value={formData.subCategory} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, subCategory: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select sub-category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {subCategories.map(subCategory => (
-                      <SelectItem key={subCategory} value={subCategory}>
-                        {subCategory}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            <div className="space-y-2">
+              <Label htmlFor="subCategory">Sub Category</Label>
+              <Select
+                value={formData.subCategory}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, subCategory: value }))}
+                disabled={!formData.category || CATEGORIES[formData.category as keyof typeof CATEGORIES]?.length === 0}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select sub category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {formData.category && CATEGORIES[formData.category as keyof typeof CATEGORIES]?.map(subCat => (
+                    <SelectItem key={subCat} value={subCat}>
+                      {subCat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <Label>Tags</Label>
+            <div className="flex space-x-2">
+              <Input
+                value={newTag}
+                onChange={(e) => setNewTag(e.target.value)}
+                placeholder="Add a tag"
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
+              />
+              <Button type="button" onClick={handleAddTag} size="sm">
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            {formData.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {formData.tags.map(tag => (
+                  <Badge key={tag} variant="secondary" className="cursor-pointer">
+                    {tag}
+                    <X 
+                      className="h-3 w-3 ml-1" 
+                      onClick={() => handleRemoveTag(tag)}
+                    />
+                  </Badge>
+                ))}
               </div>
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="tags">Tags (comma-separated)</Label>
-            <Input
-              id="tags"
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              placeholder="e.g., organic, eco-friendly, handmade"
-            />
-          </div>
-
           <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="isTopSeller"
-                checked={formData.isTopSeller}
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isTopSeller: checked as boolean }))}
-              />
-              <Label htmlFor="isTopSeller">Mark as Top Seller</Label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox
+            <div className="flex items-center justify-between">
+              <Label htmlFor="inStock">In Stock</Label>
+              <Switch
                 id="inStock"
                 checked={formData.inStock}
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, inStock: checked as boolean }))}
+                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, inStock: checked }))}
               />
-              <Label htmlFor="inStock">In Stock</Label>
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Checkbox
+            <div className="flex items-center justify-between">
+              <Label htmlFor="featured">Featured Product</Label>
+              <Switch
                 id="featured"
                 checked={formData.featured}
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, featured: checked as boolean }))}
+                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, featured: checked }))}
               />
-              <Label htmlFor="featured">Featured Product</Label>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <Label htmlFor="isTopSeller">Mark as Top Seller</Label>
+              <Switch
+                id="isTopSeller"
+                checked={formData.isTopSeller}
+                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isTopSeller: checked }))}
+              />
             </div>
           </div>
 
