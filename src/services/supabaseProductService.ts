@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { Product, ProductFilters as ShopFilters } from '@/types/product';
 import { ProductFormData, ProductFilters as AdminFilters } from '@/types/admin';
 
