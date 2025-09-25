@@ -182,15 +182,19 @@ class SupabaseProductService {
     return {
       id: data.id,
       name: data.name,
-      price: data.price,
-      image: data.image_url || '',
-      category: data.category,
-      description: data.description,
-      inStock: data.in_stock,
-      featured: data.featured,
-      tags: data.tags || [],
-      createdAt: data.created_at,
-      updatedAt: data.updated_at
+      price: parseFloat(data.price),
+      image_url: data.image_url || '',
+      images: data.images || [],
+      category: data.category || '',
+      sub_category: data.sub_category || '',
+      description: data.description || '',
+      in_stock: data.in_stock ?? true,
+      is_new_arrival: data.is_new_arrival ?? true,
+      is_under_20: data.is_under_20 ?? false,
+      created_at: data.created_at,
+      updated_at: data.updated_at,
+      average_rating: data.average_rating || 0,
+      review_count: data.review_count || 0,
     };
   }
 

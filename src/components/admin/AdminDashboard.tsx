@@ -86,8 +86,8 @@ const AdminDashboard = () => {
 
   // Calculate stats
   const totalProducts = products.length;
-  const inStockProducts = products.filter(p => p.inStock).length;
-  const topSellerProducts = products.filter(p => p.tags?.includes('top-seller')).length;
+  const inStockProducts = products.filter(p => p.in_stock).length;
+  const topSellerProducts = products.filter(p => p.average_rating && p.average_rating >= 4).length;
   const averagePrice = products.length > 0 
     ? products.reduce((sum, p) => sum + p.price, 0) / products.length 
     : 0;

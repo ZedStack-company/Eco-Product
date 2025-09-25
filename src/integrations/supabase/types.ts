@@ -95,40 +95,33 @@ export type Database = {
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "reviews_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "top_sellers"
-            referencedColumns: ["id"]
-          },
         ]
       }
     }
     Views: {
-      top_sellers: {
-        Row: {
-          average_rating: number | null
-          category: string | null
-          created_at: string | null
-          description: string | null
-          id: string | null
-          image_url: string | null
-          images: string[] | null
-          in_stock: boolean | null
-          is_new_arrival: boolean | null
-          is_under_20: boolean | null
-          name: string | null
-          price: number | null
-          review_count: number | null
-          sub_category: string | null
-          updated_at: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_top_sellers: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          average_rating: number
+          category: string
+          created_at: string
+          description: string
+          id: string
+          image_url: string
+          images: string[]
+          in_stock: boolean
+          is_new_arrival: boolean
+          is_under_20: boolean
+          name: string
+          price: number
+          review_count: number
+          sub_category: string
+          updated_at: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

@@ -16,17 +16,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
     <div className="product-card">
       <div className="product-card-image">
         <img
-          src={product.image}
+          src={product.image_url || '/placeholder.svg'}
           alt={product.name}
           className="image-primary w-full h-full object-cover"
         />
-        {product.hoverImage && (
-          <img
-            src={product.hoverImage}
-            alt={product.name}
-            className="image-secondary w-full h-full object-cover"
-          />
-        )}
       </div>
       
       <div className="text-center">

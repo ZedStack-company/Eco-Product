@@ -155,13 +155,13 @@ const ProductTable = ({ products, loading, onEdit, onDelete, onFilter }: Product
               products.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell>
-                    {product.image ? (
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-12 h-12 object-cover rounded"
-                      />
-                    ) : (
+                     {product.image_url ? (
+                       <img
+                         src={product.image_url}
+                         alt={product.name}
+                         className="w-12 h-12 object-cover rounded"
+                       />
+                     ) : (
                       <div className="w-12 h-12 bg-muted rounded flex items-center justify-center">
                         <span className="text-xs text-muted-foreground">No img</span>
                       </div>
@@ -181,15 +181,12 @@ const ProductTable = ({ products, loading, onEdit, onDelete, onFilter }: Product
                   <TableCell>{product.category}</TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
-                      <Badge variant={product.inStock ? 'default' : 'destructive'}>
-                        {product.inStock ? 'In Stock' : 'Out of Stock'}
-                      </Badge>
-                      {product.featured && (
-                        <Badge variant="secondary">Featured</Badge>
-                      )}
-                      {product.tags?.includes('top-seller') && (
-                        <Badge variant="outline">Top Seller</Badge>
-                      )}
+                       <Badge variant={product.in_stock ? 'default' : 'destructive'}>
+                         {product.in_stock ? 'In Stock' : 'Out of Stock'}
+                       </Badge>
+                       {(product.average_rating || 0) >= 4 && (
+                         <Badge variant="outline">Top Seller</Badge>
+                       )}
                     </div>
                   </TableCell>
                   <TableCell className="text-right">

@@ -44,48 +44,14 @@ const ProductCard = ({
         {/* Product Image */}
         <div className="product-card-image relative">
           <img
-            src={product.image}
+            src={product.image_url || '/placeholder.svg'}
             alt={product.name}
             className="image-primary w-full h-full object-cover"
             loading="lazy"
           />
-          {product.hoverImage && (
-            <img
-              src={product.hoverImage}
-              alt={product.name}
-              className="image-secondary w-full h-full object-cover"
-              loading="lazy"
-            />
-          )}
-          
-          {/* Quick Actions Overlay */}
-          {(showQuickView || showAddToCart) && (
-            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
-              {showQuickView && (
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={handleQuickView}
-                  className="text-xs"
-                >
-                  Quick View
-                </Button>
-              )}
-              {showAddToCart && (
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={handleAddToCart}
-                  className="text-xs"
-                >
-                  Add to Cart
-                </Button>
-              )}
-            </div>
-          )}
 
           {/* Stock Badge */}
-          {!product.inStock && (
+          {!product.in_stock && (
             <div className="absolute top-2 left-2 bg-destructive text-destructive-foreground px-2 py-1 text-xs font-medium">
               Out of Stock
             </div>
@@ -113,11 +79,11 @@ const ProductCard = ({
           {showAddToCart && variant !== 'compact' && (
             <Button
               onClick={handleAddToCart}
-              disabled={!product.inStock}
+              disabled={!product.in_stock}
               className="eco-button mt-4 w-full text-xs"
               size="sm"
             >
-              {product.inStock ? 'ADD TO CART' : 'OUT OF STOCK'}
+              {product.in_stock ? 'ADD TO CART' : 'OUT OF STOCK'}
             </Button>
           )}
         </div>

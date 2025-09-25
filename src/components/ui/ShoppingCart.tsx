@@ -64,11 +64,11 @@ const ShoppingCart = () => {
               <div className="space-y-6">
                 {items.map((item) => (
                   <div key={item.id} className="flex gap-4">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="h-20 w-20 object-cover"
-                    />
+                     <img
+                       src={item.image_url || '/placeholder.svg'}
+                       alt={item.name}
+                       className="h-20 w-20 object-cover"
+                     />
                     <div className="flex-1">
                       <h3 className="font-medium text-sm">{item.name}</h3>
                       <p className="text-sm text-muted-foreground">${item.price}</p>

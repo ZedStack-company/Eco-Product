@@ -14,27 +14,19 @@ export const filterProducts = (products: Product[], filters: ProductFilters): Pr
     filtered = filtered.filter(product =>
       product.name.toLowerCase().includes(query) ||
       product.description?.toLowerCase().includes(query) ||
-      product.category.toLowerCase().includes(query) ||
-      product.tags?.some(tag => tag.toLowerCase().includes(query))
+      product.category.toLowerCase().includes(query)
     );
   }
 
   // Stock filter
   if (filters.inStock !== null && filters.inStock !== undefined) {
-    filtered = filtered.filter(product => product.inStock === filters.inStock);
+    filtered = filtered.filter(product => product.in_stock === filters.inStock);
   }
 
   // Price range filter
   if (filters.priceRange) {
     filtered = filtered.filter(product =>
       product.price >= filters.priceRange![0] && product.price <= filters.priceRange![1]
-    );
-  }
-
-  // Tags filter
-  if (filters.tags && filters.tags.length > 0) {
-    filtered = filtered.filter(product =>
-      product.tags?.some(tag => filters.tags!.includes(tag))
     );
   }
 
@@ -55,11 +47,11 @@ export const sortProducts = (products: Product[], sortBy: string): Product[] => 
       return sorted.sort((a, b) => b.price - a.price);
     case 'newest':
       return sorted.sort((a, b) =>
-        new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime()
+        new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime()
       );
     case 'oldest':
       return sorted.sort((a, b) =>
-        new Date(a.createdAt || '').getTime() - new Date(b.createdAt || '').getTime()
+        new Date(a.created_at || '').getTime() - new Date(b.created_at || '').getTime()
       );
     default:
       return sorted;
@@ -69,11 +61,6 @@ export const sortProducts = (products: Product[], sortBy: string): Product[] => 
 export const getProductsByCategory = (products: Product[], category: string): Product[] => {
   if (category === 'All') return products;
   return products.filter(product => product.category === category);
-};
-
-export const getFeaturedProducts = (products: Product[], limit?: number): Product[] => {
-  const featured = products.filter(product => product.featured);
-  return limit ? featured.slice(0, limit) : featured;
 };
 
 export const getRelatedProducts = (
@@ -96,19 +83,16 @@ export const formatPrice = (price: number, currency = 'USD'): string => {
   }).format(price);
 };
 
-export const getProductImageUrl = (product: Product, variant?: 'hover'): string => {
-  if (variant === 'hover' && product.hoverImage) {
-    return product.hoverImage;
-  }
-  return product.image;
+export const getProductImageUrl = (product: Product): string => {
+  return product.image_url || '/placeholder.svg';
 };
 
 export const isProductInStock = (product: Product): boolean => {
-  return product.inStock;
+  return product.in_stock;
 };
 
 export const getProductAvailabilityText = (product: Product): string => {
-  return product.inStock ? 'In Stock' : 'Out of Stock';
+  return product.in_stock ? 'In Stock' : 'Out of Stock';
 };
 
 export const calculateDiscountedPrice = (

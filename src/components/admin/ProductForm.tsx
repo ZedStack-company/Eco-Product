@@ -41,11 +41,11 @@ const ProductForm = ({ product, onSubmit, onCancel, isLoading }: ProductFormProp
         price: product.price,
         description: product.description || '',
         category: product.category,
-        subCategory: '',
-        tags: product.tags || [],
-        isTopSeller: product.tags?.includes('top-seller') || false,
-        inStock: product.inStock,
-        featured: product.featured || false
+        subCategory: product.sub_category || '',
+        tags: [],
+        isTopSeller: (product.average_rating || 0) >= 4,
+        inStock: product.in_stock,
+        featured: false
       });
     }
   }, [product]);

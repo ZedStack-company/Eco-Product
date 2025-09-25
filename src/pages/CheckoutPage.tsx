@@ -309,11 +309,11 @@ const CheckoutPage = () => {
                   {/* Items */}
                   {items.map((item) => (
                     <div key={item.id} className="flex gap-3">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-16 h-16 object-cover rounded"
-                      />
+                       <img
+                         src={item.image_url || '/placeholder.svg'}
+                         alt={item.name}
+                         className="w-16 h-16 object-cover rounded"
+                       />
                       <div className="flex-1 min-w-0">
                         <h4 className="text-sm font-medium truncate">{item.name}</h4>
                         <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>

@@ -35,8 +35,9 @@ export const useShopProducts = (category?: string, limit?: number) => {
       if (category) {
         // Filter products for specific category
         const filteredProducts = updatedProducts.filter(product => {
-          if (category === 'Under $20') return product.price <= 20;
-          if (category === 'Top Sellers') return product.tags?.includes('top-seller');
+          if (category === 'Under $20') return product.is_under_20;
+          if (category === 'New Arrivals') return product.is_new_arrival;
+          if (category === 'Top Sellers') return (product.average_rating || 0) >= 4;
           if (category === 'Shop Everything') return true;
           return product.category === category;
         });

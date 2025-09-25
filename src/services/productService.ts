@@ -31,7 +31,7 @@ class ProductService {
 
     if (filters?.inStock !== null && filters?.inStock !== undefined) {
       filteredProducts = filteredProducts.filter(
-        product => product.inStock === filters.inStock
+        product => product.in_stock === filters.inStock
       );
     }
 
@@ -43,12 +43,13 @@ class ProductService {
       );
     }
 
-    if (filters?.tags && filters.tags.length > 0) {
-      filteredProducts = filteredProducts.filter(
-        product => 
-          product.tags?.some(tag => filters.tags!.includes(tag))
-      );
-    }
+    // Remove tags filter as it's not in the new schema
+    // if (filters?.tags && filters.tags.length > 0) {
+    //   filteredProducts = filteredProducts.filter(
+    //     product => 
+    //       product.tags?.some(tag => filters.tags!.includes(tag))
+    //   );
+    // }
 
     // Apply sorting
     if (filters?.sortBy) {
@@ -67,7 +68,7 @@ class ProductService {
           break;
         case 'newest':
           filteredProducts.sort((a, b) => 
-            new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime()
+            new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime()
           );
           break;
       }
@@ -88,7 +89,7 @@ class ProductService {
   async getFeaturedProducts(limit = 4): Promise<Product[]> {
     await delay(200);
     return this.products
-      .filter(product => product.featured || product.inStock)
+      .filter(product => product.in_stock)
       .slice(0, limit);
   }
 
