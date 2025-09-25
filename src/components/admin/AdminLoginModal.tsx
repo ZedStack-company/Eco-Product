@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAdmin } from '@/hooks/useAdmin';
 import { toast } from 'sonner';
-import { ArrowLeft, Lock, ShoppingBag } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, Lock, ShoppingBag } from 'lucide-react';
 
 interface AdminLoginModalProps {
   isOpen: boolean;
@@ -18,6 +18,7 @@ const AdminLoginModal = ({ isOpen, onClose, onContinueShopping }: AdminLoginModa
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAdmin();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -123,14 +124,30 @@ const AdminLoginModal = ({ isOpen, onClose, onContinueShopping }: AdminLoginModa
               
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={credentials.password}
-                  onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
-                  placeholder="Enter password"
-                  required
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={credentials.password}
+                    onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
+                    placeholder="Enter password"
+                    required
+                    className="pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </Button>
+                </div>
               </div>
               
               <Button 
