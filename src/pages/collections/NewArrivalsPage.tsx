@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import PageSection from '@/components/layout/PageSection';
 import ProductGrid from '@/components/product/ProductGrid';
@@ -18,9 +18,9 @@ const NewArrivalsPage = () => {
     inStock: null,
   });
 
-  const { products, loading } = useProducts({
-    initialFilters: filters,
-  });
+  const { products: allProducts, loading } = useProducts();
+
+  const [filteredProducts, setFilteredProducts] = useState(allProducts);
 
   const { addToCart } = useCart();
 
@@ -28,10 +28,50 @@ const NewArrivalsPage = () => {
     setFilters(newFilters);
   };
 
-  // Expand new arrivals for demo
-  const baseNewProducts = [...products].reverse().slice(0, 3);
+  // Filtering and sorting logic applied locally
+  useEffect(() => {
+    let filtered = allProducts;
+
+    if (filters.category) {
+      filtered = filtered.filter(p => p.category === filters.category);
+    }
+    if (filters.searchQuery.trim() !== '') {
+      filtered = filtered.filter(p =>
+        p.name.toLowerCase().includes(filters.searchQuery.toLowerCase())
+      );
+    }
+    if (filters.inStock !== null) {
+      filtered = filtered.filter(p => p.inStock === filters.inStock);
+    }
+    filtered = filtered.filter(p =>
+      p.price >= filters.priceRange[0] && p.price <= filters.priceRange[1]
+    );
+
+    switch (filters.sortBy) {
+      case 'name':
+        filtered = filtered.slice().sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'name-desc':
+        filtered = filtered.slice().sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case 'price':
+        filtered = filtered.slice().sort((a, b) => a.price - b.price);
+        break;
+      case 'price-desc':
+        filtered = filtered.slice().sort((a, b) => b.price - a.price);
+        break;
+      case 'newest':
+        filtered = filtered.slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        break;
+    }
+
+    setFilteredProducts(filtered);
+  }, [filters, allProducts]);
+
+  // Expanding new arrivals for demo purposes, uses filtered products
+  const baseNewProducts = [...filteredProducts].reverse().slice(0, 3);
   const expandedNewArrivals = [];
-  
+
   for (let i = 0; i < 5; i++) {
     baseNewProducts.forEach((product, index) => {
       expandedNewArrivals.push({
@@ -42,7 +82,7 @@ const NewArrivalsPage = () => {
       });
     });
   }
-  
+
   const newArrivals = expandedNewArrivals.slice(0, 16);
 
   return (

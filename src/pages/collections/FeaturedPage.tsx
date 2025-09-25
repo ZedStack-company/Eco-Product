@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import PageSection from '@/components/layout/PageSection';
 import ProductGrid from '@/components/product/ProductGrid';
@@ -18,9 +18,9 @@ const FeaturedPage = () => {
     inStock: null,
   });
 
-  const { products, loading } = useProducts({
-    initialFilters: filters,
-  });
+  const { products: allProducts, loading } = useProducts();
+
+  const [filteredProducts, setFilteredProducts] = useState(allProducts);
 
   const { addToCart } = useCart();
 
@@ -28,14 +28,57 @@ const FeaturedPage = () => {
     setFilters(newFilters);
   };
 
-  // Featured products (top picks)
-  const featuredProducts = products.slice(0, 8);
+  // Apply local filtering and sorting on products when filters or products change
+  useEffect(() => {
+    let filtered = allProducts;
+
+    if (filters.category) {
+      filtered = filtered.filter(p => p.category === filters.category);
+    }
+
+    if (filters.searchQuery.trim() !== '') {
+      filtered = filtered.filter(p =>
+        p.name.toLowerCase().includes(filters.searchQuery.toLowerCase())
+      );
+    }
+
+    if (filters.inStock !== null) {
+      filtered = filtered.filter(p => p.inStock === filters.inStock);
+    }
+
+    filtered = filtered.filter(p =>
+      p.price >= filters.priceRange[0] && p.price <= filters.priceRange[1]
+    );
+
+    switch (filters.sortBy) {
+      case 'name':
+        filtered = filtered.slice().sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'name-desc':
+        filtered = filtered.slice().sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case 'price':
+        filtered = filtered.slice().sort((a, b) => a.price - b.price);
+        break;
+      case 'price-desc':
+        filtered = filtered.slice().sort((a, b) => b.price - a.price);
+        break;
+      case 'newest':
+        filtered = filtered.slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        break;
+    }
+
+    setFilteredProducts(filtered);
+  }, [filters, allProducts]);
+
+  // Featured products top 8 from filteredProducts
+  const featuredProducts = filteredProducts.slice(0, 8);
 
   return (
     <div>
       {/* Hero Section */}
       <PageSection padding="xl" className="relative overflow-hidden">
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25"
           style={{ backgroundImage: `url(${productBlanket})` }}
         />

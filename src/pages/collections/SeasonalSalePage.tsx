@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import PageSection from '@/components/layout/PageSection';
 import ProductGrid from '@/components/product/ProductGrid';
@@ -18,9 +18,9 @@ const SeasonalSalePage = () => {
     inStock: null,
   });
 
-  const { products, loading } = useProducts({
-    initialFilters: filters,
-  });
+  const { products: allProducts, loading } = useProducts();
+
+  const [filteredProducts, setFilteredProducts] = useState(allProducts);
 
   const { addToCart } = useCart();
 
@@ -28,10 +28,52 @@ const SeasonalSalePage = () => {
     setFilters(newFilters);
   };
 
-  // Expand seasonal products for demo
-  const baseSeasonalProducts = products.slice(0, 4);
+  // Local filter and sort logic on products change
+  useEffect(() => {
+    let filtered = allProducts;
+
+    if (filters.category) {
+      filtered = filtered.filter(p => p.category === filters.category);
+    }
+
+    if (filters.searchQuery.trim() !== '') {
+      filtered = filtered.filter(p =>
+        p.name.toLowerCase().includes(filters.searchQuery.toLowerCase())
+      );
+    }
+
+    if (filters.inStock !== null) {
+      filtered = filtered.filter(p => p.inStock === filters.inStock);
+    }
+
+    filtered = filtered.filter(p =>
+      p.price >= filters.priceRange[0] && p.price <= filters.priceRange[1]
+    );
+
+    switch (filters.sortBy) {
+      case 'name':
+        filtered = filtered.slice().sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'name-desc':
+        filtered = filtered.slice().sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case 'price':
+        filtered = filtered.slice().sort((a, b) => a.price - b.price);
+        break;
+      case 'price-desc':
+        filtered = filtered.slice().sort((a, b) => b.price - a.price);
+        break;
+      case 'newest':
+        filtered = filtered.slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        break;
+    }
+
+    setFilteredProducts(filtered);
+  }, [filters, allProducts]);
+
+  // Expand seasonal products for demo, uses filtered products
+  const baseSeasonalProducts = filteredProducts.slice(0, 4);
   const expandedSeasonalProducts = [];
-  
   for (let i = 0; i < 4; i++) {
     baseSeasonalProducts.forEach((product, index) => {
       expandedSeasonalProducts.push({
@@ -42,14 +84,13 @@ const SeasonalSalePage = () => {
       });
     });
   }
-  
   const seasonalProducts = expandedSeasonalProducts.slice(0, 20);
 
   return (
     <div>
       {/* Hero Section */}
       <PageSection padding="xl" className="relative overflow-hidden">
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25"
           style={{ backgroundImage: `url(${blogCrafts})` }}
         />

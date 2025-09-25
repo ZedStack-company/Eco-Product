@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import PageSection from '@/components/layout/PageSection';
@@ -21,9 +21,10 @@ const CollectionsPage = () => {
     inStock: null,
   });
 
-  const { products, loading } = useProducts({
-    initialFilters: filters,
-  });
+  const { products: allProducts, loading } = useProducts();
+
+  // Local filtered products state
+  const [filteredProducts, setFilteredProducts] = useState(allProducts);
 
   const { addToCart } = useCart();
 
@@ -31,27 +32,71 @@ const CollectionsPage = () => {
     setFilters(newFilters);
   };
 
+  // Filter products locally on filter or products change
+  useEffect(() => {
+    let filtered = allProducts;
+
+    if (filters.category) {
+      filtered = filtered.filter(product => product.category === filters.category);
+    }
+
+    if (filters.searchQuery.trim() !== '') {
+      filtered = filtered.filter(product =>
+        product.name.toLowerCase().includes(filters.searchQuery.toLowerCase())
+      );
+    }
+
+    if (filters.inStock !== null) {
+      filtered = filtered.filter(product => product.inStock === filters.inStock);
+    }
+
+    filtered = filtered.filter(product =>
+      product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
+    );
+
+    switch (filters.sortBy) {
+      case 'name':
+        filtered = filtered.slice().sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'name-desc':
+        filtered = filtered.slice().sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case 'price':
+        filtered = filtered.slice().sort((a, b) => a.price - b.price);
+        break;
+      case 'price-desc':
+        filtered = filtered.slice().sort((a, b) => b.price - a.price);
+        break;
+      case 'newest':
+        filtered = filtered.slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        break;
+    }
+
+    setFilteredProducts(filtered);
+  }, [filters, allProducts]);
+
+
   const collections = [
     {
       name: 'Under $20',
       description: 'Affordable sustainable products',
       href: '/collections/under-20',
       image: productOils,
-      count: products.filter(p => p.price <= 20).length
+      count: filteredProducts.filter(p => p.price <= 20).length,
     },
     {
       name: 'New Arrivals',
       description: 'Latest sustainable finds',
       href: '/collections/new-arrivals',
       image: productCandles,
-      count: products.slice(0, 4).length
+      count: filteredProducts.slice(0, 4).length,
     },
     {
       name: 'Seasonal Sale',
       description: 'Limited time offers',
       href: '/collections/seasonal-sale',
       image: productUtensils,
-      count: products.slice(0, 6).length
+      count: filteredProducts.slice(0, 6).length,
     },
   ];
 
@@ -127,7 +172,7 @@ const CollectionsPage = () => {
           />
 
           <ProductGrid
-            products={products.slice(0, 8)}
+            products={filteredProducts.slice(0, 8)}
             loading={loading}
             onAddToCart={addToCart}
           />

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import PageSection from '@/components/layout/PageSection';
 import ProductGrid from '@/components/product/ProductGrid';
@@ -18,9 +18,11 @@ const ShopPage = () => {
     inStock: null,
   });
 
-  const { products, loading } = useProducts({
-    initialFilters: filters,
-  });
+  // Products from hook - initially unfiltered or passed with default filters
+  const { products: allProducts, loading } = useProducts();
+
+  // Local state for filtered products
+  const [filteredProducts, setFilteredProducts] = useState(allProducts);
 
   const { addToCart } = useCart();
 
@@ -28,20 +30,68 @@ const ShopPage = () => {
     setFilters(newFilters);
   };
 
-  const recentlyViewedProducts = products.slice(0, 2);
+  // Filter products locally whenever filters or allProducts change
+  useEffect(() => {
+    let filtered = allProducts;
+
+    // Filter by category
+    if (filters.category) {
+      filtered = filtered.filter(product => product.category === filters.category);
+    }
+
+    // Filter by search query (case insensitive)
+    if (filters.searchQuery.trim() !== '') {
+      filtered = filtered.filter(product =>
+        product.name.toLowerCase().includes(filters.searchQuery.toLowerCase())
+      );
+    }
+
+    // Filter by stock status
+    if (filters.inStock !== null) {
+      filtered = filtered.filter(product => product.inStock === filters.inStock);
+    }
+
+    // Filter by price range
+    filtered = filtered.filter(product =>
+      product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
+    );
+
+    // Sorting
+    switch (filters.sortBy) {
+      case 'name':
+        filtered = filtered.slice().sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'name-desc':
+        filtered = filtered.slice().sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case 'price':
+        filtered = filtered.slice().sort((a, b) => a.price - b.price);
+        break;
+      case 'price-desc':
+        filtered = filtered.slice().sort((a, b) => b.price - a.price);
+        break;
+      case 'newest':
+        filtered = filtered.slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        break;
+    }
+
+    setFilteredProducts(filtered);
+  }, [filters, allProducts]);
+
+  const recentlyViewedProducts = allProducts.slice(0, 2);
 
   return (
     <div>
       {/* Hero Section */}
       <PageSection padding="xl" className="relative overflow-hidden">
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
           style={{ backgroundImage: `url(${productsHero})` }}
         />
         <div className="relative z-10 text-center">
           <h1 className="heading-xl mb-6">Shop All Products</h1>
           <p className="text-body max-w-2xl mx-auto">
-            Discover our complete collection of sustainable, eco-friendly products 
+            Discover our complete collection of sustainable, eco-friendly products
             designed to help you live more consciously and beautifully.
           </p>
         </div>
@@ -61,21 +111,23 @@ const ShopPage = () => {
 
           {/* Products Grid */}
           <ProductGrid
-            products={products}
+            products={filteredProducts}
             loading={loading}
             onAddToCart={addToCart}
             emptyTitle="No products found"
             emptyDescription="Try adjusting your filters or search terms to find what you're looking for."
             emptyAction={
-              <Button 
-                variant="outline" 
-                onClick={() => handleFiltersChange({
-                  category: null,
-                  sortBy: 'name',
-                  searchQuery: '',
-                  priceRange: [0, 1000],
-                  inStock: null,
-                })}
+              <Button
+                variant="outline"
+                onClick={() =>
+                  handleFiltersChange({
+                    category: null,
+                    sortBy: 'name',
+                    searchQuery: '',
+                    priceRange: [0, 1000],
+                    inStock: null,
+                  })
+                }
               >
                 Clear All Filters
               </Button>
@@ -88,12 +140,9 @@ const ShopPage = () => {
       {recentlyViewedProducts.length > 0 && (
         <PageSection background="muted">
           <div className="text-center mb-12">
-            <SectionTitle 
-              title="Recently viewed" 
-              subtitle="Products you've recently looked at"
-            />
+            <SectionTitle title="Recently viewed" subtitle="Products you've recently looked at" />
           </div>
-          
+
           <ProductGrid
             products={recentlyViewedProducts}
             onAddToCart={addToCart}

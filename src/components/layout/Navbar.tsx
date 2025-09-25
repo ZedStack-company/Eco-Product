@@ -10,21 +10,38 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
+const shopDropdownCategories = {
+  shopEverything: [
+    { name: 'Shop Everything', href: '/shop' },
+    { name: 'New Arrivals', href: '/collections/new-arrivals' },
+    { name: 'Under $20', href: '/collections/under-20' },
+    { name: 'Seasonal Sale', href: '/collections/seasonal-sale' },
+  ],
+  featured: [
+    { name: 'Blankets', href: '/collections/blankets' },
+    { name: 'Spring Feeling', href: '/collections/spring-feeling' },
+    { name: 'Plant Lovers', href: '/collections/plant-lovers' },
+    { name: 'Home Decor', href: '/collections/home-decor' },
+    { name: 'Cruelty-Free Beauty', href: '/collections/cruelty-free-beauty' },
+  ],
+  collections: [
+    { name: 'Art & Prints', href: '/collections/art-prints' },
+    { name: 'Books & Magazines', href: '/collections/books-magazines' },
+    { name: 'Candles & Incense', href: '/collections/candles-incense' },
+    { name: 'Food & Drink', href: '/collections/food-drink' },
+    { name: 'Garden', href: '/collections/garden' },
+  ],
+};
+
+// Placeholder image path - replace with your actual image URL or import
+const shopDropdownImage = "/path-to-your-image.jpg";
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const dispatch = useAppDispatch();
   const cartItems = useAppSelector(state => state.cart.items);
   const cartItemsCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-
-  const shopDropdownItems = [
-    { name: 'Shop Everything', href: '/shop' },
-    { name: 'New Arrivals', href: '/collections/new-arrivals' },
-    { name: 'Under $20', href: '/collections/under-20' },
-    { name: 'Seasonal Sale', href: '/collections/seasonal-sale' },
-    { name: 'Featured', href: '/collections/featured' },
-    { name: 'Collections', href: '/collections' },
-  ];
 
   const topSellersDropdownItems = [
     { name: 'All Top Sellers', href: '/top-sellers' },
@@ -44,33 +61,79 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-transparent hover:bg-background transition-all duration-300 group">
+    <nav className="fixed top-0 w-full z-50 bg-transparent hover:bg-background transition-all duration-300 group border-b border-black/20">
       <div className="container-eco">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="text-2xl font-light tracking-widest text-white group-hover:text-foreground transition-colors">
+          <Link to="/" className="text-3xl font-extrabold tracking-widest text-white group-hover:text-foreground transition-colors">
             ECO
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {/* Shop Dropdown */}
+            {/* Shop Dropdown - multi-column with image */}
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center text-sm font-medium tracking-wide hover:text-muted-foreground transition-colors text-white group-hover:text-foreground">
+              <DropdownMenuTrigger className="flex items-center text-sm font-medium tracking-widest uppercase hover:text-muted-foreground transition-colors text-white group-hover:text-foreground">
                 SHOP
                 <ChevronDown className="ml-1 h-3 w-3" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-background border border-border shadow-lg">
-                {shopDropdownItems.map((item) => (
-                  <DropdownMenuItem key={item.name} asChild>
-                    <Link 
-                      to={item.href}
-                      className="w-full text-sm font-medium tracking-wide hover:bg-muted cursor-pointer"
-                    >
-                      {item.name}
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
+              <DropdownMenuContent className="bg-background border border-border shadow-lg rounded-lg p-6 w-[720px] grid grid-cols-4 gap-6">
+                
+                {/* Column 1: Shop Everything */}
+                <div>
+                  <h3 className="text-xs font-semibold uppercase mb-3 tracking-wide">
+                    SHOP EVERYTHING
+                  </h3>
+                  {shopDropdownCategories.shopEverything.map(item => (
+                    <DropdownMenuItem key={item.name} asChild>
+                      <Link 
+                        to={item.href} 
+                        className="block text-sm font-medium tracking-wide hover:text-foreground cursor-pointer mb-1"
+                      >
+                        {item.name}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </div>
+
+                {/* Column 2: Featured */}
+                <div>
+                  <h3 className="text-xs font-semibold uppercase mb-3 tracking-wide">
+                    FEATURED
+                  </h3>
+                  {shopDropdownCategories.featured.map(item => (
+                    <DropdownMenuItem key={item.name} asChild>
+                      <Link 
+                        to={item.href} 
+                        className="block text-sm font-medium tracking-wide hover:text-foreground cursor-pointer mb-1"
+                      >
+                        {item.name}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </div>
+
+                {/* Column 3: Collections */}
+                <div>
+                  <h3 className="text-xs font-semibold uppercase mb-3 tracking-wide">
+                    COLLECTIONS
+                  </h3>
+                  {shopDropdownCategories.collections.map(item => (
+                    <DropdownMenuItem key={item.name} asChild>
+                      <Link 
+                        to={item.href} 
+                        className="block text-sm font-medium tracking-wide hover:text-foreground cursor-pointer mb-1"
+                      >
+                        {item.name}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </div>
+
+                {/* Column 4: Image */}
+                <div className="rounded-lg overflow-hidden">
+                  <img src={shopDropdownImage} alt="Shop Preview" className="w-full h-full object-cover rounded-lg" />
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -99,7 +162,7 @@ const Navbar = () => {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`text-sm font-medium tracking-wide hover:text-muted-foreground transition-colors ${
+                className={`text-sm font-medium tracking-wide uppercase hover:text-muted-foreground transition-colors ${
                   location.pathname === item.href ? 'text-white group-hover:text-foreground' : 'text-white group-hover:text-foreground'
                 }`}
               >
@@ -142,7 +205,7 @@ const Navbar = () => {
               {/* Mobile Shop Items */}
               <div className="space-y-2">
                 <span className="text-sm font-medium tracking-wide text-foreground">SHOP</span>
-                {shopDropdownItems.map((item) => (
+                {shopDropdownCategories.shopEverything.concat(shopDropdownCategories.featured).concat(shopDropdownCategories.collections).map((item) => (
                   <Link
                     key={item.name}
                     to={item.href}

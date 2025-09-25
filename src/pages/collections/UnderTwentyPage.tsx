@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import PageSection from '@/components/layout/PageSection';
 import ProductGrid from '@/components/product/ProductGrid';
@@ -11,7 +11,7 @@ import blogAutumn from '../../assets/blog-autumn.jpg';
 
 const UnderTwentyPage = () => {
   const { categories } = useCategories();
-  const { products, loading } = useShopProducts('Under $20');
+  const { products: allProducts, loading } = useShopProducts('Under $20');
   const { addToCart } = useCart();
 
   const [filters, setFilters] = useState<FilterState>({
@@ -22,11 +22,54 @@ const UnderTwentyPage = () => {
     inStock: null,
   });
 
+  const [filteredProducts, setFilteredProducts] = useState(allProducts);
+
   const handleFiltersChange = (newFilters: FilterState) => {
     setFilters(newFilters);
   };
 
-  // Remove old expansion logic, use products directly from Supabase
+  // Local filtering and sorting effect
+  useEffect(() => {
+    let filtered = allProducts;
+
+    if (filters.category) {
+      filtered = filtered.filter(p => p.category === filters.category);
+    }
+
+    if (filters.searchQuery.trim() !== '') {
+      filtered = filtered.filter(p =>
+        p.name.toLowerCase().includes(filters.searchQuery.toLowerCase())
+      );
+    }
+
+    if (filters.inStock !== null) {
+      filtered = filtered.filter(p => p.inStock === filters.inStock);
+    }
+
+    filtered = filtered.filter(p => 
+      p.price >= filters.priceRange[0] && p.price <= filters.priceRange[1]
+    );
+
+    switch (filters.sortBy) {
+      case 'name':
+        filtered = filtered.slice().sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'name-desc':
+        filtered = filtered.slice().sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case 'price':
+        filtered = filtered.slice().sort((a, b) => a.price - b.price);
+        break;
+      case 'price-desc':
+        filtered = filtered.slice().sort((a, b) => b.price - a.price);
+        break;
+      case 'newest':
+        filtered = filtered.slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        break;
+    }
+
+    setFilteredProducts(filtered);
+  }, [filters, allProducts]);
 
   return (
     <div>
@@ -64,7 +107,7 @@ const UnderTwentyPage = () => {
           />
 
           <ProductGrid
-            products={products}
+            products={filteredProducts}
             loading={loading}
             onAddToCart={addToCart}
             emptyTitle="No products found under $20"
