@@ -19,52 +19,113 @@ export type Database = {
           category: string
           created_at: string | null
           description: string | null
-          featured: boolean | null
           id: string
           image_url: string | null
+          images: string[] | null
           in_stock: boolean | null
-          is_top_seller: boolean | null
+          is_new_arrival: boolean | null
+          is_under_20: boolean | null
           name: string
           price: number
           sub_category: string | null
-          tags: string[] | null
           updated_at: string | null
         }
         Insert: {
           category: string
           created_at?: string | null
           description?: string | null
-          featured?: boolean | null
           id?: string
           image_url?: string | null
+          images?: string[] | null
           in_stock?: boolean | null
-          is_top_seller?: boolean | null
+          is_new_arrival?: boolean | null
+          is_under_20?: boolean | null
           name: string
           price: number
           sub_category?: string | null
-          tags?: string[] | null
           updated_at?: string | null
         }
         Update: {
           category?: string
           created_at?: string | null
           description?: string | null
-          featured?: boolean | null
           id?: string
           image_url?: string | null
+          images?: string[] | null
           in_stock?: boolean | null
-          is_top_seller?: boolean | null
+          is_new_arrival?: boolean | null
+          is_under_20?: boolean | null
           name?: string
           price?: number
           sub_category?: string | null
-          tags?: string[] | null
           updated_at?: string | null
         }
         Relationships: []
       }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          product_id: string
+          rating: number
+          user_name: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          product_id: string
+          rating: number
+          user_name: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          product_id?: string
+          rating?: number
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "top_sellers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
-      [_ in never]: never
+      top_sellers: {
+        Row: {
+          average_rating: number | null
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          image_url: string | null
+          images: string[] | null
+          in_stock: boolean | null
+          is_new_arrival: boolean | null
+          is_under_20: boolean | null
+          name: string | null
+          price: number | null
+          review_count: number | null
+          sub_category: string | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
