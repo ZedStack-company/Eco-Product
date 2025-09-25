@@ -69,14 +69,14 @@ const ProductTable = ({ products, loading, onEdit, onDelete, onFilter }: Product
               <div className="space-y-2">
                 <label className="text-sm font-medium">Category</label>
                 <Select
-                  value={filters.category}
-                  onValueChange={(value) => handleFilterChange('category', value)}
+                  value={filters.category || 'all'}
+                  onValueChange={(value) => handleFilterChange('category', value === 'all' ? '' : value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="All categories" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All categories</SelectItem>
+                    <SelectItem value="all">All categories</SelectItem>
                     {Object.keys(CATEGORIES).map(category => (
                       <SelectItem key={category} value={category}>
                         {category}
@@ -107,14 +107,14 @@ const ProductTable = ({ products, loading, onEdit, onDelete, onFilter }: Product
               <div className="space-y-2">
                 <label className="text-sm font-medium">Top Sellers</label>
                 <Select
-                  value={filters.isTopSeller?.toString() || ''}
-                  onValueChange={(value) => handleFilterChange('isTopSeller', value === '' ? null : value === 'true')}
+                  value={filters.isTopSeller?.toString() || 'all'}
+                  onValueChange={(value) => handleFilterChange('isTopSeller', value === 'all' ? null : value === 'true')}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="All products" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All products</SelectItem>
+                    <SelectItem value="all">All products</SelectItem>
                     <SelectItem value="true">Top sellers only</SelectItem>
                     <SelectItem value="false">Regular products</SelectItem>
                   </SelectContent>
