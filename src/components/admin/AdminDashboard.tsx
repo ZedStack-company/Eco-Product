@@ -11,9 +11,11 @@ import ProductForm from './ProductForm';
 import ProductTable from './ProductTable';
 import { toast } from 'sonner';
 import { LogOut, Plus, Package, TrendingUp, DollarSign, Eye } from 'lucide-react';
+import { useNavigate } from 'react-router-dom'; // ⬅️ add this
 
 const AdminDashboard = () => {
   const { logout } = useAdminAuth();
+  const navigate = useNavigate(); // ⬅️ hook for navigation
   const [showProductForm, setShowProductForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [filters, setFilters] = useState<ProductFilters>({
@@ -82,6 +84,7 @@ const AdminDashboard = () => {
   const handleLogout = () => {
     logout();
     toast.success('Logged out successfully');
+    navigate('/', { replace: true }); // ⬅️ go directly to Home page
   };
 
   // Calculate stats
