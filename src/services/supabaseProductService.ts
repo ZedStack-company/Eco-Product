@@ -3,6 +3,9 @@ import { Product, ProductFilters as ShopFilters } from '@/types/product';
 import { ProductFormData, ProductFilters as AdminFilters } from '@/types/admin';
 
 class SupabaseProductService {
+  getRealtimeClient() {
+  return supabase;
+}
   async getAllProducts(filters?: AdminFilters): Promise<Product[]> {
     let query = (supabase as any)
       .from('products')
