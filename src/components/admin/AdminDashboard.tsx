@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { useAdmin } from '@/hooks/useAdmin';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useSupabaseProducts } from '@/hooks/useSupabaseProducts';
 import { Product } from '@/types/product';
 import { ProductFormData, ProductFilters } from '@/types/admin';
@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import { LogOut, Plus, Package, TrendingUp, DollarSign, Eye } from 'lucide-react';
 
 const AdminDashboard = () => {
-  const { logout } = useAdmin();
+  const { logout } = useAdminAuth();
   const [showProductForm, setShowProductForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [filters, setFilters] = useState<ProductFilters>({

@@ -19,44 +19,15 @@ import SeasonalSalePage from './pages/collections/SeasonalSalePage';
 import NewArrivalsPage from './pages/collections/NewArrivalsPage';
 import FeaturedPage from './pages/collections/FeaturedPage';
 import CollectionsPage from './pages/collections/CollectionsPage';
-import AdminPage from './pages/AdminPage';
-import AdminLoginModal from './components/admin/AdminLoginModal';
+import ProductDetailPage from './pages/ProductDetailPage';
+import AdminLoginPage from './pages/AdminLoginPage';
+import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
+import AdminDashboard from './components/admin/AdminDashboard';
 import NotFound from "./pages/NotFound";
-import { useAdmin } from './hooks/useAdmin';
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  const { isAuthenticated, isLoading } = useAdmin();
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [userMode, setUserMode] = useState<'shopping' | 'admin' | null>(null);
-
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated && userMode === null) {
-      setShowLoginModal(true);
-    }
-  }, [isLoading, isAuthenticated, userMode]);
-
-  const handleContinueShopping = () => {
-    setUserMode('shopping');
-    setShowLoginModal(false);
-  };
-
-  // If admin is authenticated, show only admin interface
-  if (isAuthenticated) {
-    return (
-      <Provider store={store}>
-        <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
-            <AdminPage />
-            <Toaster />
-            <Sonner />
-          </TooltipProvider>
-        </QueryClientProvider>
-      </Provider>
-    );
-  }
-
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
@@ -78,15 +49,17 @@ const App = () => {
                 <Route path="journal" element={<JournalPage />} />
                 <Route path="theme-features" element={<ThemeFeaturesPage />} />
                 <Route path="checkout" element={<CheckoutPage />} />
+                <Route path="product/:id" element={<ProductDetailPage />} />
+                <Route path="admin/login" element={<AdminLoginPage />} />
+                <Route path="admin" element={
+                  <AdminProtectedRoute>
+                    <AdminDashboard />
+                  </AdminProtectedRoute>
+                } />
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>
             <ShoppingCart />
-            <AdminLoginModal 
-              isOpen={showLoginModal}
-              onClose={() => setShowLoginModal(false)}
-              onContinueShopping={handleContinueShopping}
-            />
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>

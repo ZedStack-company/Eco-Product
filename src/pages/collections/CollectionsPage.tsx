@@ -47,7 +47,7 @@ const CollectionsPage = () => {
     }
 
     if (filters.inStock !== null) {
-      filtered = filtered.filter(product => product.inStock === filters.inStock);
+      filtered = filtered.filter(product => product.in_stock === filters.inStock);
     }
 
     filtered = filtered.filter(product =>
@@ -68,7 +68,7 @@ const CollectionsPage = () => {
         filtered = filtered.slice().sort((a, b) => b.price - a.price);
         break;
       case 'newest':
-        filtered = filtered.slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        filtered = filtered.slice().sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         break;
     }
 

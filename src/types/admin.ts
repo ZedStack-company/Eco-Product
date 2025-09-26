@@ -32,11 +32,15 @@ export interface ProductFilters {
 }
 
 export const CATEGORIES = {
-  'Shop Everything': [],
-  'New Arrivals': [],
-  'Under $20': [],
-  'Seasonal Sale': [],
-  'Featured': ['Blankets', 'Spring Feeling', 'Plant Lovers', 'Home Décor', 'Cruelty-Free Beauty'],
-  'Collections': ['Art & Prints', 'Books & Magazines', 'Candles & Incense', 'Food & Drink', 'Garden'],
-  'Top Sellers': []
-};
+  "Blankets": [],
+  "Spring Feeling": [],
+  "Plant Lovers": [],
+  "Home Decor": [],
+  "Cruelty-Free Beauty": [],
+  "Arts & Prints": [],
+  "Books & Magazines": [],
+  "Candles & Incense": [],
+  "Food & Drink": [],
+  "Garden": [],
+  "Seasonal Sale": []
+} as const;

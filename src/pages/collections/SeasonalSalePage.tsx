@@ -43,7 +43,7 @@ const SeasonalSalePage = () => {
     }
 
     if (filters.inStock !== null) {
-      filtered = filtered.filter(p => p.inStock === filters.inStock);
+      filtered = filtered.filter(p => p.in_stock === filters.inStock);
     }
 
     filtered = filtered.filter(p =>
@@ -64,7 +64,7 @@ const SeasonalSalePage = () => {
         filtered = filtered.slice().sort((a, b) => b.price - a.price);
         break;
       case 'newest':
-        filtered = filtered.slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        filtered = filtered.slice().sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         break;
     }
 
