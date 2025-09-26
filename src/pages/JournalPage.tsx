@@ -45,9 +45,9 @@ const JournalPage = () => {
         title="California Road Trip"
         className="min-h-[70vh]"
       >
-        <Link to="/journal/california-road-trip" className="eco-button-inverse">
+        {/* <Link to="/journal/california-road-trip" className="eco-button-inverse">
           CONTINUE READING
-        </Link>
+        </Link> */}
       </HeroSection>
 
       {/* Filter Tags */}
@@ -90,9 +90,9 @@ const JournalPage = () => {
                   <p className="text-body mb-4">
                     {article.excerpt}
                   </p>
-                  <button className="text-sm font-medium tracking-wide uppercase border-b border-foreground hover:text-muted-foreground transition-colors">
+                  {/* <button className="text-sm font-medium tracking-wide uppercase border-b border-foreground hover:text-muted-foreground transition-colors">
                     CONTINUE READING
-                  </button>
+                  </button> */}
                 </Link>
               </article>
             ))}

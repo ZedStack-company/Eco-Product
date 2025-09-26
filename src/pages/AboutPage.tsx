@@ -10,7 +10,7 @@ const AboutPage = () => {
       {/* Hero Section with Parallax */}
       <HeroSection
         backgroundImage={heroForest}
-        title="Rooted in purpose"
+        title="About"
         parallax={true}
         className="min-h-[60vh]"
       />
@@ -76,7 +76,7 @@ const AboutPage = () => {
       >
         <div className="container-eco">
           <div className="max-w-4xl mx-auto">
-            <h2 className="heading-lg mb-8">
+            <h2 className="heading-lg mb-8 text-white">
               We are proud to contribute to environmental causes as part of the 1% for the Planet movement, ensuring that a portion of our sales goes directly to protecting our planet.
             </h2>
           </div>

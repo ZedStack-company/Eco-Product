@@ -32,7 +32,7 @@ const HeroSection = ({
     >
       <div className="container-eco relative z-10">
         <div className="max-w-4xl mx-auto">
-          <h1 className="heading-xl mb-6">{title}</h1>
+          <h1 className="heading-xl mb-6 text-white">{title}</h1>
           {subtitle && (
             <p className="text-xl md:text-2xl font-light mb-8 text-white/90">
               {subtitle}
