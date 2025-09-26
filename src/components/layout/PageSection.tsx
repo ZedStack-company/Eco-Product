@@ -12,6 +12,8 @@ interface PageSectionProps {
   as?: keyof JSX.IntrinsicElements;
 }
 
+
+
 const backgroundClasses = {
   default: 'bg-background',
   muted: 'bg-muted/30',

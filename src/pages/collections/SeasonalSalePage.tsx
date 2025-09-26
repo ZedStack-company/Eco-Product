@@ -4,7 +4,8 @@ import PageSection from '@/components/layout/PageSection';
 import ProductGrid from '@/components/product/ProductGrid';
 import ProductFilters, { FilterState } from '@/components/product/ProductFilters';
 import SectionTitle from '@/components/ui/SectionTitle';
-import { useProducts, useCategories } from '@/hooks/useProducts';
+import { useCategories } from '@/hooks/useProducts';
+import { useShopProducts } from '@/hooks/useShopProducts';
 import { useCart } from '@/hooks/useCart';
 import blogCrafts from '../../assets/blog-crafts.jpg';
 
@@ -18,7 +19,7 @@ const SeasonalSalePage = () => {
     inStock: null,
   });
 
-  const { products: allProducts, loading } = useProducts();
+  const { products: allProducts, loading } = useShopProducts('Seasonal Sale');
 
   const [filteredProducts, setFilteredProducts] = useState(allProducts);
 
@@ -127,7 +128,7 @@ const SeasonalSalePage = () => {
           />
 
           <ProductGrid
-            products={seasonalProducts}
+            products={filteredProducts}
             loading={loading}
             onAddToCart={addToCart}
             emptyTitle="No seasonal products available"

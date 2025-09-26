@@ -7,57 +7,49 @@ import SectionTitle from '@/components/ui/SectionTitle';
 import { useCategories } from '@/hooks/useProducts';
 import { useShopProducts } from '@/hooks/useShopProducts';
 import { useCart } from '@/hooks/useCart';
-import productsHero from '../assets/products-hero.jpg';
+import blogAutumn from '../../assets/blog-autumn.jpg';
 
-const ShopPage = () => {
+const PlantLovers = () => {
   const { categories } = useCategories();
+  const { products: allProducts, loading } = useShopProducts('Plant Lovers');
+  const { addToCart } = useCart();
+
   const [filters, setFilters] = useState<FilterState>({
     category: null,
-    sortBy: 'name',
+    sortBy: 'price',
     searchQuery: '',
-    priceRange: [0, 1000],
+    priceRange: [0, 20],
     inStock: null,
   });
 
-  // Products from hook - initially unfiltered or passed with default filters
-  const { products: allProducts, loading } = useShopProducts();
-
-  // Local state for filtered products
   const [filteredProducts, setFilteredProducts] = useState(allProducts);
-
-  const { addToCart } = useCart();
 
   const handleFiltersChange = (newFilters: FilterState) => {
     setFilters(newFilters);
   };
 
-  // Filter products locally whenever filters or allProducts change
+  // Local filtering and sorting effect
   useEffect(() => {
     let filtered = allProducts;
 
-    // Filter by category
     if (filters.category) {
-      filtered = filtered.filter(product => product.category === filters.category);
+      filtered = filtered.filter(p => p.category === filters.category);
     }
 
-    // Filter by search query (case insensitive)
     if (filters.searchQuery.trim() !== '') {
-      filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(filters.searchQuery.toLowerCase())
+      filtered = filtered.filter(p =>
+        p.name.toLowerCase().includes(filters.searchQuery.toLowerCase())
       );
     }
 
-    // Filter by stock status
     if (filters.inStock !== null) {
-      filtered = filtered.filter(product => product.in_stock === filters.inStock);
+      filtered = filtered.filter(p => p.in_stock === filters.inStock);
     }
 
-    // Filter by price range
-    filtered = filtered.filter(product =>
-      product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
+    filtered = filtered.filter(p => 
+      p.price >= filters.priceRange[0] && p.price <= filters.priceRange[1]
     );
 
-    // Sorting
     switch (filters.sortBy) {
       case 'name':
         filtered = filtered.slice().sort((a, b) => a.name.localeCompare(b.name));
@@ -79,21 +71,19 @@ const ShopPage = () => {
     setFilteredProducts(filtered);
   }, [filters, allProducts]);
 
-  const recentlyViewedProducts = allProducts.slice(0, 2);
-
   return (
     <div>
       {/* Hero Section */}
       <PageSection padding="xl" className="relative overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
-          style={{ backgroundImage: `url(${productsHero})` }}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
+          style={{ backgroundImage: `url(${blogAutumn})` }}
         />
         <div className="relative z-10 text-center">
-          <h1 className="heading-xl mb-6">Shop All Products</h1>
+          <h1 className="heading-xl mb-6">Sustainable Blankets</h1>
           <p className="text-body max-w-2xl mx-auto">
-            Discover our complete collection of sustainable, eco-friendly products
-            designed to help you live more consciously and beautifully.
+            Discover affordable sustainable products that don't compromise on quality. 
+            Great eco-friendly finds all under $20.
           </p>
         </div>
       </PageSection>
@@ -101,7 +91,13 @@ const ShopPage = () => {
       {/* Products Section */}
       <PageSection>
         <div className="space-y-8">
-          {/* Filters */}
+          <div className="text-center">
+            <SectionTitle 
+              title="Affordable Eco Products" 
+              subtitle="Quality sustainable items that fit any budget"
+            />
+          </div>
+
           <ProductFilters
             categories={categories}
             filters={filters}
@@ -110,49 +106,31 @@ const ShopPage = () => {
             showStockFilter={true}
           />
 
-          {/* Products Grid */}
           <ProductGrid
             products={filteredProducts}
             loading={loading}
             onAddToCart={addToCart}
-            emptyTitle="No products found"
-            emptyDescription="Try adjusting your filters or search terms to find what you're looking for."
+            emptyTitle="No products found under $20"
+            emptyDescription="Check back soon for more affordable options."
             emptyAction={
-              <Button
-                variant="outline"
-                onClick={() =>
-                  handleFiltersChange({
-                    category: null,
-                    sortBy: 'name',
-                    searchQuery: '',
-                    priceRange: [0, 1000],
-                    inStock: null,
-                  })
-                }
+              <Button 
+                variant="outline" 
+                onClick={() => handleFiltersChange({
+                  category: null,
+                  sortBy: 'price',
+                  searchQuery: '',
+                  priceRange: [0, 20],
+                  inStock: null,
+                })}
               >
-                Clear All Filters
+                Reset Filters
               </Button>
             }
           />
         </div>
       </PageSection>
-
-      {/* Recently Viewed */}
-      {recentlyViewedProducts.length > 0 && (
-        <PageSection background="muted">
-          <div className="text-center mb-12">
-            <SectionTitle title="Recently viewed" subtitle="Products you've recently looked at" />
-          </div>
-
-          <ProductGrid
-            products={recentlyViewedProducts}
-            onAddToCart={addToCart}
-            className="max-w-4xl mx-auto"
-          />
-        </PageSection>
-      )}
     </div>
   );
 };
 
-export default ShopPage;
+export default PlantLovers;

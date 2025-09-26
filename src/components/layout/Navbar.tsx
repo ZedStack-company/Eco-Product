@@ -1,4 +1,5 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Search, ShoppingBag, Menu, X, ChevronDown } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../../hooks';
@@ -13,23 +14,23 @@ import {
 const shopDropdownCategories = {
   shopEverything: [
     { name: 'Shop Everything', href: '/shop' },
-    { name: 'New Arrivals', href: '/collections/new-arrivals' },
-    { name: 'Under $20', href: '/collections/under-20' },
-    { name: 'Seasonal Sale', href: '/collections/seasonal-sale' },
+    { name: 'New Arrivals', href: '/new-arrivals' },
+    { name: 'Under $20', href: '/under-20' },
+    { name: 'Seasonal Sale', href: '/seasonal-sale' },
   ],
   featured: [
-    { name: 'Blankets', href: '/collections/blankets' },
-    { name: 'Spring Feeling', href: '/collections/spring-feeling' },
-    { name: 'Plant Lovers', href: '/collections/plant-lovers' },
-    { name: 'Home Decor', href: '/collections/home-decor' },
-    { name: 'Cruelty-Free Beauty', href: '/collections/cruelty-free-beauty' },
+    { name: 'Blankets', href: '/blankets' },
+    { name: 'Spring Feeling', href: '/spring-feeling' },
+    { name: 'Plant Lovers', href: '/plant-lovers' },
+    { name: 'Home Decor', href: '/home-decor' },
+    { name: 'Cruelty-Free Beauty', href: '/cruelty-free-beauty' },
   ],
   collections: [
-    { name: 'Art & Prints', href: '/collections/art-prints' },
-    { name: 'Books & Magazines', href: '/collections/books-magazines' },
-    { name: 'Candles & Incense', href: '/collections/candles-incense' },
-    { name: 'Food & Drink', href: '/collections/food-drink' },
-    { name: 'Garden', href: '/collections/garden' },
+    { name: 'Art & Prints', href: '/art-prints' },
+    { name: 'Books & Magazines', href: '/books-magazines' },
+    { name: 'Candles & Incense', href: '/candles-incense' },
+    { name: 'Food & Drink', href: '/food-drink' },
+    { name: 'Garden', href: '/garden' },
   ],
 };
 
@@ -60,8 +61,29 @@ const Navbar = () => {
     dispatch(toggleCart());
   };
 
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+  const handleScroll = () => {
+    if (window.scrollY >= window.innerHeight) {
+      setIsVisible(false);
+    } else {
+      setIsVisible(true);
+    }
+  };
+
+  window.addEventListener('scroll', handleScroll);
+
+  return () => {
+    window.removeEventListener('scroll', handleScroll);
+  };
+}, []);
+
   return (
-    <nav className="fixed top-0 w-full z-50 bg-transparent hover:bg-background transition-all duration-300 group border-b border-black/20">
+    <nav className={`fixed top-0 w-full z-50 bg-transparent hover:bg-background transition-all duration-300 group border-b border-black/20 ${
+      isVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+    }`}
+    style={{ transition: 'opacity 0.3s ease' }}>
       <div className="container-eco">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -81,9 +103,7 @@ const Navbar = () => {
                 
                 {/* Column 1: Shop Everything */}
                 <div>
-                  <h3 className="text-xs font-semibold uppercase mb-3 tracking-wide">
-                    SHOP EVERYTHING
-                  </h3>
+             
                   {shopDropdownCategories.shopEverything.map(item => (
                     <DropdownMenuItem key={item.name} asChild>
                       <Link 
@@ -98,9 +118,7 @@ const Navbar = () => {
 
                 {/* Column 2: Featured */}
                 <div>
-                  <h3 className="text-xs font-semibold uppercase mb-3 tracking-wide">
-                    FEATURED
-                  </h3>
+                 
                   {shopDropdownCategories.featured.map(item => (
                     <DropdownMenuItem key={item.name} asChild>
                       <Link 
@@ -115,9 +133,7 @@ const Navbar = () => {
 
                 {/* Column 3: Collections */}
                 <div>
-                  <h3 className="text-xs font-semibold uppercase mb-3 tracking-wide">
-                    COLLECTIONS
-                  </h3>
+                 
                   {shopDropdownCategories.collections.map(item => (
                     <DropdownMenuItem key={item.name} asChild>
                       <Link 

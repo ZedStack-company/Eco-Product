@@ -19,11 +19,22 @@ import SeasonalSalePage from './pages/collections/SeasonalSalePage';
 import NewArrivalsPage from './pages/collections/NewArrivalsPage';
 import FeaturedPage from './pages/collections/FeaturedPage';
 import CollectionsPage from './pages/collections/CollectionsPage';
+import Blanket from './pages/collections/Blanket';
+import ArtAndPrint from './pages/collections/ArtAndPrints';
+import Books from './pages/collections/BooksAndMagazines';
+import Incense from './pages/collections/CandlesAndIncense';
+import Cruelty from './pages/collections/CrueltyFreeBeauty';
+import Food from './pages/collections/FoodAndDrink';
+import Garden from './pages/collections/Garden';
+import HomeDecore from './pages/collections/HomeDecore';
+import PlantLovers from './pages/collections/PlantLovers';
+import SpringFeelings from './pages/collections/SpringFeelings';
 import AdminPage from './pages/AdminPage';
 import AdminLoginModal from './components/admin/AdminLoginModal';
 import NotFound from "./pages/NotFound";
 import { useAdmin } from './hooks/useAdmin';
 import ProtectedRoute from './components/ProtectedRoute';
+import { Import } from 'lucide-react';
 
 const queryClient = new QueryClient();
 
@@ -72,11 +83,21 @@ useEffect(() => {
           <Route index element={<HomePage />} />
           <Route path="shop" element={<ShopPage />} />
           <Route path="top-sellers" element={<ShopPage />} />
-          <Route path="collections/under-20" element={<UnderTwentyPage />} />
+          <Route path="/under-20" element={<UnderTwentyPage />} />
           <Route path="collections/seasonal-sale" element={<SeasonalSalePage />} />
-          <Route path="collections/new-arrivals" element={<NewArrivalsPage />} />
-          <Route path="collections/featured" element={<FeaturedPage />} />
-          <Route path="collections" element={<CollectionsPage />} />
+          {/* <Route path="collections/new-arrivals" element={<NewArrivalsPage />} /> */}
+          <Route path="/blankets" element={<Blanket/>} />
+          <Route path="/spring-feeling" element={<ArtAndPrint/>} />
+          <Route path="/plant-lovers" element={<Books/>} />
+          <Route path="/home-decor" element={<Incense/>} />
+          <Route path="/cruelty-free-beauty" element={<Cruelty/>} />
+          <Route path="/art-prints" element={<Food/>} />
+          <Route path="/books-magazines" element={<Garden/>} />
+          <Route path="/candles-incense" element={<HomeDecore/>} />
+          <Route path="/food-drink" element={<PlantLovers/>} />
+          <Route path="/garden" element={<SpringFeelings/>} />
+          {/* <Route path="collections/featured" element={<FeaturedPage />} />
+          <Route path="collections" element={<CollectionsPage />} /> */}
           <Route path="about" element={<AboutPage />} />
           <Route path="journal" element={<JournalPage />} />
           <Route path="theme-features" element={<ThemeFeaturesPage />} />

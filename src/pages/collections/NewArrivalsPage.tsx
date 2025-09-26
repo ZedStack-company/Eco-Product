@@ -4,7 +4,8 @@ import PageSection from '@/components/layout/PageSection';
 import ProductGrid from '@/components/product/ProductGrid';
 import ProductFilters, { FilterState } from '@/components/product/ProductFilters';
 import SectionTitle from '@/components/ui/SectionTitle';
-import { useProducts, useCategories } from '@/hooks/useProducts';
+import { useCategories } from '@/hooks/useProducts';
+import { useShopProducts } from '@/hooks/useShopProducts';
 import { useCart } from '@/hooks/useCart';
 import heroForest from '../../assets/hero-forest.jpg';
 
@@ -18,7 +19,7 @@ const NewArrivalsPage = () => {
     inStock: null,
   });
 
-  const { products: allProducts, loading } = useProducts();
+  const { products: allProducts, loading } = useShopProducts('New Arrivals');
 
   const [filteredProducts, setFilteredProducts] = useState(allProducts);
 
