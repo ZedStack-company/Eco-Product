@@ -14,7 +14,7 @@ import {
 const shopDropdownCategories = {
   shopEverything: [
     { name: 'Shop Everything', href: '/shop' },
-    { name: 'New Arrivals', href: '/new-arrivals' },
+    // { name: 'New Arrivals', href: '/new-arrivals' },
     { name: 'Under $20', href: '/under-20' },
     { name: 'Seasonal Sale', href: '/seasonal-sale' },
   ],
@@ -46,9 +46,9 @@ const Navbar = () => {
 
   const topSellersDropdownItems = [
     { name: 'All Top Sellers', href: '/top-sellers' },
-    { name: 'Candles', href: '/shop?category=Candles' },
-    { name: 'Kitchen', href: '/shop?category=Kitchen' },
-    { name: 'Body Care', href: '/shop?category=Body Care' },
+    // { name: 'Candles', href: '/shop?category=Candles' },
+    // { name: 'Kitchen', href: '/shop?category=Kitchen' },
+    // { name: 'Body Care', href: '/shop?category=Body Care' },
   ];
 
   const navigation = [

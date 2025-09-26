@@ -34,21 +34,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Bestsellers Section */}
-      <section className="section-eco bg-muted/30">
-        <div className="container-eco">
-          <SectionTitle 
-            title="BESTSELLERS" 
-            className="mb-16"
-          />
-          <ProductGrid products={featuredProducts} onAddToCart={addToCart} />
-          <div className="text-center mt-12">
-            <Link to="/shop" className="eco-button">
-              VIEW ALL
-            </Link>
-          </div>
-        </div>
-      </section>
+      
 
       {/* Special Offers Section */}
       <section 

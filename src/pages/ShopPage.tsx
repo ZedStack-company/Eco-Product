@@ -84,14 +84,16 @@ const ShopPage = () => {
   return (
     <div>
       {/* Hero Section */}
-      <PageSection padding="xl" className="relative overflow-hidden">
+      <PageSection padding="xl" className="h-screen relative overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${productsHero})` }}
         />
-        <div className="relative z-10 text-center">
-          <h1 className="heading-xl mb-6">Shop All Products</h1>
-          <p className="text-body max-w-2xl mx-auto">
+
+         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/30 to-black/80" />
+        <div className="relative z-10 text-center top-36">
+          <h1 className="heading-xl mb-6 text-white">Shop All Products</h1>
+          <p className="text-body max-w-2xl mx-auto text-white">
             Discover our complete collection of sustainable, eco-friendly products
             designed to help you live more consciously and beautifully.
           </p>

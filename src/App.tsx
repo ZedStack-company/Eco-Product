@@ -29,6 +29,7 @@ import Garden from './pages/collections/Garden';
 import HomeDecore from './pages/collections/HomeDecore';
 import PlantLovers from './pages/collections/PlantLovers';
 import SpringFeelings from './pages/collections/SpringFeelings';
+import AllTopSellers from './pages/collections/AllTopSellers';
 import AdminPage from './pages/AdminPage';
 import AdminLoginModal from './components/admin/AdminLoginModal';
 import NotFound from "./pages/NotFound";
@@ -82,9 +83,8 @@ useEffect(() => {
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="shop" element={<ShopPage />} />
-          <Route path="top-sellers" element={<ShopPage />} />
           <Route path="/under-20" element={<UnderTwentyPage />} />
-          <Route path="collections/seasonal-sale" element={<SeasonalSalePage />} />
+          <Route path="seasonal-sale" element={<SeasonalSalePage />} />
           {/* <Route path="collections/new-arrivals" element={<NewArrivalsPage />} /> */}
           <Route path="/blankets" element={<Blanket/>} />
           <Route path="/spring-feeling" element={<ArtAndPrint/>} />
@@ -96,6 +96,7 @@ useEffect(() => {
           <Route path="/candles-incense" element={<HomeDecore/>} />
           <Route path="/food-drink" element={<PlantLovers/>} />
           <Route path="/garden" element={<SpringFeelings/>} />
+          <Route path="/top-sellers" element={<AllTopSellers/>} />
           {/* <Route path="collections/featured" element={<FeaturedPage />} />
           <Route path="collections" element={<CollectionsPage />} /> */}
           <Route path="about" element={<AboutPage />} />
