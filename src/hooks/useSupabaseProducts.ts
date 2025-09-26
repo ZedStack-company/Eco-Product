@@ -24,13 +24,19 @@ export const useSupabaseProducts = (filters?: ProductFilters) => {
   useEffect(() => {
     fetchProducts();
 
-    // Subscribe to real-time updates
-    const subscription = supabaseProductService.subscribeToProducts((updatedProducts) => {
-      setProducts(updatedProducts);
-    });
+    // Subscribe to realtime changes from the products table
+    const subscription = supabaseProductService.getRealtimeClient()
+      .channel('public:products')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, (payload) => {
+        // You can handle inserts, updates, deletes here
+        // For simplicity, refetch the product list on any change
+        fetchProducts();
+      })
+      .subscribe();
 
+    // Cleanup subscription on unmount
     return () => {
-      subscription.unsubscribe();
+      supabaseProductService.getRealtimeClient().removeChannel(subscription);
     };
   }, []);
 

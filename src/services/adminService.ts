@@ -18,7 +18,7 @@ class AdminService {
         username: credentials.username,
         isAuthenticated: true
       };
-      
+
       // Store in localStorage for persistence
       localStorage.setItem('admin_user', JSON.stringify(this.currentAdmin));
       return this.currentAdmin;
@@ -26,18 +26,24 @@ class AdminService {
     return null;
   }
 
-  getCurrentAdmin(): AdminUser | null {
-    if (this.currentAdmin) return this.currentAdmin;
-    
-    // Check localStorage
-    const stored = localStorage.getItem('admin_user');
-    if (stored) {
-      this.currentAdmin = JSON.parse(stored);
-      return this.currentAdmin;
+getCurrentAdmin(): AdminUser | null {
+  if (this.currentAdmin) return this.currentAdmin;
+
+  const stored = localStorage.getItem('admin_user');
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored) as AdminUser;
+      if (parsed.isAuthenticated && parsed.username === 'ZedStack@company') {
+        this.currentAdmin = parsed;
+        return parsed;
+      }
+    } catch {
+      localStorage.removeItem('admin_user');
     }
-    
-    return null;
   }
+  return null;
+}
+
 
   isAuthenticated(): boolean {
     const admin = this.getCurrentAdmin();
