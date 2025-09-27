@@ -30,6 +30,7 @@ export const useAdminAuth = () => {
 
   const logout = () => {
     localStorage.removeItem('admin_session');
+    localStorage.removeItem('admin_user'); // clear admin session from local storage
     setIsLoggedIn(false);
   };
 

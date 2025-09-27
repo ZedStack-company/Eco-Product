@@ -49,13 +49,13 @@ const AppRoutes = () => {
   const [userMode, setUserMode] = useState<'shopping' | 'admin' | null>(null);
 
 useEffect(() => {
-  console.log("isLoading:", isLoading, "isAuthenticated:", isAuthenticated, "hasPrompted:", hasPrompted);
-  if (!isLoading && !hasPrompted) { // removed !isAuthenticated
+  if (!isLoading && !isAuthenticated && !hasPrompted) {
     console.log("Opening login modal...");
     setShowLoginModal(true);
     setHasPrompted(true);
   }
-}, [isLoading, hasPrompted]);
+}, [isLoading, isAuthenticated, hasPrompted]);
+
 
 
   const handleContinueShopping = () => {
@@ -71,12 +71,14 @@ useEffect(() => {
   };
 
   const handleLogout = () => {
-    logout();
+    logout(); // your logout logic which might also clear state
+    localStorage.removeItem('admin_user'); // clear admin session from local storage
     setUserMode(null);
-    setHasPrompted(false); // reset so we prompt again next time
-    setShowLoginModal(true); // open modal right away
+    setHasPrompted(false); // reset to allow prompting again next time
+    setShowLoginModal(true); // show login modal immediately after logout
     navigate('/', { replace: true });
   };
+
 
   return (
     <>
@@ -113,14 +115,15 @@ useEffect(() => {
           <Route path="*" element={<NotFound />} />
         </Route>
 
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <AdminPage onLogout={handleLogout} />
-            </ProtectedRoute>
-          }
-        />
+       <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <AdminPage onLogout={handleLogout} />
+          </ProtectedRoute>
+        }
+/>
+
       </Routes>
 
       <ShoppingCart />

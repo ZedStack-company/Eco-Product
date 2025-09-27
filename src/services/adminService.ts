@@ -51,7 +51,10 @@ class AdminService {
 
   logout(): void {
     this.currentAdmin = null;
-    localStorage.removeItem(ADMIN_STORAGE_KEY);
+    localStorage.setItem(
+      ADMIN_STORAGE_KEY,
+      JSON.stringify({ isAuthenticated: false })
+    ); // mark as logged out
   }
 }
 

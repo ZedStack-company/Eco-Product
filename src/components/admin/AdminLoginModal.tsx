@@ -33,15 +33,15 @@ const AdminLoginModal = ({
   onContinueShopping,
   onLoginSuccess
 }: AdminLoginModalProps) => {
+  const { login, isAuthenticated } = useAdmin();
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { login } = useAdmin();
 
   // Reset everything each time modal opens
   useEffect(() => {
-    if (isOpen) {
+    if (isAuthenticated && isOpen) {
       setShowLoginForm(false);
       setCredentials({ username: '', password: '' });
       setIsLoading(false);

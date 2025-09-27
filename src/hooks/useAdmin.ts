@@ -24,6 +24,7 @@ export const useAdmin = () => {
 
   const logout = useCallback(() => {
     adminService.logout();
+    localStorage.removeItem('admin_user'); // clear admin session from local storage
     setCurrentAdmin(null);
   }, []);
 
