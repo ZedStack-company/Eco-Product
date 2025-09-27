@@ -113,7 +113,7 @@ const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
             products={filteredProducts}
             loading={loading}
             onAddToCart={addToCart}
-            emptyTitle="No products found under $20"
+            emptyTitle="No products found"
             emptyDescription="Check back soon for more affordable options."
             emptyAction={
               <Button 
@@ -122,7 +122,7 @@ const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
                   category: null,
                   sortBy: 'price',
                   searchQuery: '',
-                  priceRange: [0, 20],
+                  priceRange: [0, 200000000000],
                   inStock: null,
                 })}
               >

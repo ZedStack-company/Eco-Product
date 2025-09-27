@@ -114,7 +114,7 @@ const Garden = () => {
             products={filteredProducts}
             loading={loading}
             onAddToCart={addToCart}
-            emptyTitle="No products found under $20"
+            emptyTitle="No products found"
             emptyDescription="Check back soon for more affordable options."
             emptyAction={
               <Button 
@@ -123,7 +123,7 @@ const Garden = () => {
                   category: null,
                   sortBy: 'price',
                   searchQuery: '',
-                  priceRange: [0, 20],
+                  priceRange: [0, 20000000000000],
                   inStock: null,
                 })}
               >

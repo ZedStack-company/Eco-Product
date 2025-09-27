@@ -129,7 +129,7 @@ const SeasonalSalePage = () => {
             onFiltersChange={handleFiltersChange}
             showSearch={true}
             showStockFilter={true}
-            showCategoryFilter= {true}
+           
             
           />
 
@@ -146,7 +146,7 @@ const SeasonalSalePage = () => {
                   category: null,
                   sortBy: 'name',
                   searchQuery: '',
-                  priceRange: [0, 1000],
+                  priceRange: [0, 200000000000],
                   inStock: null,
                 })}
               >

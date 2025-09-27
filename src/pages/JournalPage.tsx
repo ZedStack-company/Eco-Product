@@ -57,9 +57,9 @@ const JournalPage = () => {
             <button className="text-sm font-medium tracking-wide uppercase border-b-2 border-foreground pb-2">
               LIFESTYLE
             </button>
-            <button className="text-sm font-medium tracking-wide uppercase text-muted-foreground hover:text-foreground transition-colors pb-2">
+            {/* <button className="text-sm font-medium tracking-wide uppercase text-muted-foreground hover:text-foreground transition-colors pb-2">
               PHOTO JOURNAL
-            </button>
+            </button> */}
           </div>
         </div>
       </section>

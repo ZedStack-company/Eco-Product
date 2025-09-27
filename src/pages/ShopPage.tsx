@@ -129,7 +129,7 @@ const ShopPage =  () => {
                     category: null,
                     sortBy: 'name',
                     searchQuery: '',
-                    priceRange: [0, 1000],
+                    priceRange: [0, 2000000000000],
                     inStock: null,
                   })
                 }
