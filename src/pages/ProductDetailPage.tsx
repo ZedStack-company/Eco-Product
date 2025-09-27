@@ -142,7 +142,7 @@ const ProductDetailPage = () => {
   if (!product) {
     return (
       <PageContainer>
-        <div className="text-center py-16">
+        <div className="text-center py-16 my-20">
           <h1 className="text-2xl font-bold mb-4">Product Not Found</h1>
           <Link to="/shop">
             <Button variant="outline">
@@ -160,7 +160,7 @@ const ProductDetailPage = () => {
     : 0;
 
   return (
-    <PageContainer className="py-8">
+    <PageContainer className="py-8 my-20">
       {/* Breadcrumb */}
       <nav className="flex items-center space-x-2 text-sm text-muted-foreground mb-8">
         <Link to="/" className="hover:text-foreground">Home</Link>
@@ -263,12 +263,12 @@ const ProductDetailPage = () => {
               >
                 {product.in_stock ? 'Add to Cart' : 'Out of Stock'}
               </Button>
-              <Button variant="outline" size="icon">
+              {/* <Button variant="outline" size="icon">
                 <Heart className="h-4 w-4" />
               </Button>
               <Button variant="outline" size="icon">
                 <Share2 className="h-4 w-4" />
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>
@@ -280,7 +280,7 @@ const ProductDetailPage = () => {
           <CardContent className="p-6">
             <h3 className="font-semibold mb-4">Shipping & Returns</h3>
             <div className="space-y-2 text-sm text-muted-foreground">
-              <p>• Free shipping on orders over $75</p>
+              {/* <p>• Free shipping on orders over $75</p> */}
               <p>• Standard delivery: 3-5 business days</p>
               <p>• Express delivery: 1-2 business days</p>
               <p>• 30-day return policy</p>
