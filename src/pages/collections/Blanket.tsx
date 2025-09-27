@@ -22,7 +22,7 @@ const { products: allProducts, loading } = useShopProducts('blankets');
     category: null,
     sortBy: 'price',
     searchQuery: '',
-    priceRange: [0, 20],
+    priceRange: [0, 200000],
     inStock: null,
   });
 
@@ -34,7 +34,7 @@ const { products: allProducts, loading } = useShopProducts('blankets');
 
   // ✅ Apply filters whenever products or filters change
   useEffect(() => {
-    let filtered = [...allProducts];
+    let filtered =  [...allProducts];
 
     if (filters.category) {
       filtered = filtered.filter((p) => p.category === filters.category);
@@ -75,7 +75,7 @@ const { products: allProducts, loading } = useShopProducts('blankets');
         break;
     }
 
-    setFilteredProducts(filtered);
+     setFilteredProducts(filtered);
   }, [filters, allProducts]);
 
   return (
@@ -116,7 +116,7 @@ const { products: allProducts, loading } = useShopProducts('blankets');
           />
 
           <ProductGrid
-            products={allProducts}
+            products={filteredProducts}
             loading={loading}
             onAddToCart={addToCart}
             emptyTitle="No products found under $20"

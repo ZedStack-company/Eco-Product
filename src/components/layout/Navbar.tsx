@@ -14,7 +14,7 @@ import {
 const shopDropdownCategories = {
   shopEverything: [
     { name: 'Shop Everything', href: '/shop' },
-    // { name: 'New Arrivals', href: '/new-arrivals' },
+    { name: 'New Arrivals', href: '/new-arrivals' },
     { name: 'Under $20', href: '/under-20' },
     { name: 'Seasonal Sale', href: '/seasonal-sale' },
   ],

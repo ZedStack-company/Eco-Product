@@ -18,7 +18,7 @@ const Books = () => {
     category: null,
     sortBy: 'price',
     searchQuery: '',
-    priceRange: [0, 20],
+    priceRange: [0, 2000000000000],
     inStock: null,
   });
 
@@ -30,7 +30,7 @@ const Books = () => {
 
   // Local filtering and sorting effect
   useEffect(() => {
-    let filtered = allProducts;
+    let filtered = [...allProducts];
 
     if (filters.category) {
       filtered = filtered.filter(p => p.category === filters.category);
@@ -108,7 +108,7 @@ const Books = () => {
           />
 
           <ProductGrid
-            products={allProducts}
+            products={filteredProducts}
             loading={loading}
             onAddToCart={addToCart}
             emptyTitle="No products found under $20"

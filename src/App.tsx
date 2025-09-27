@@ -85,7 +85,7 @@ useEffect(() => {
           <Route path="shop" element={<ShopPage />} />
           <Route path="/under-20" element={<UnderTwentyPage />} />
           <Route path="seasonal-sale" element={<SeasonalSalePage />} />
-          {/* <Route path="collections/new-arrivals" element={<NewArrivalsPage />} /> */}
+          <Route path="new-arrivals" element={<NewArrivalsPage />} />
           <Route path="/blankets" element={<Blanket/>} />
           <Route path="/spring-feeling" element={<SpringFeelings/>} />
           <Route path="/plant-lovers" element={<PlantLovers/>} />

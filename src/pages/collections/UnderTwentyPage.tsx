@@ -12,7 +12,7 @@ import blogAutumn from '../../assets/blog-autumn.jpg';
 
 const UnderTwentyPage = () => {
   const { categories } = useCategories();
-  const { products: allProducts, loading } = useShopProducts('Under $20');
+  const { products: allProducts, loading } = useShopProducts();
   const { addToCart } = useCart();
 
   const [filters, setFilters] = useState<FilterState>({
@@ -107,10 +107,11 @@ const UnderTwentyPage = () => {
             onFiltersChange={handleFiltersChange}
             showSearch={true}
             showStockFilter={true}
+            showCategoryFilter={true}
           />
 
           <ProductGrid
-            products={allProducts}
+            products={filteredProducts}
             loading={loading}
             onAddToCart={addToCart}
             emptyTitle="No products found under $20"

@@ -17,7 +17,7 @@ const SeasonalSalePage = () => {
     category: 'Seasonal Sale',
     sortBy: 'name',
     searchQuery: '',
-    priceRange: [0, 1000],
+    priceRange: [0, 20000000000000],
     inStock: null,
   });
 
@@ -129,6 +129,8 @@ const SeasonalSalePage = () => {
             onFiltersChange={handleFiltersChange}
             showSearch={true}
             showStockFilter={true}
+            showCategoryFilter= {true}
+            
           />
 
           <ProductGrid

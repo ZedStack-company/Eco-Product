@@ -19,7 +19,7 @@ const AllTopSellers = () => {
     category: null,
     sortBy: 'price',
     searchQuery: '',
-    priceRange: [0, 20],
+    priceRange: [0, 20000000000],
     inStock: null,
   });
 
@@ -32,26 +32,30 @@ const AllTopSellers = () => {
 
   // Local filtering and sorting effect
   useEffect(() => {
-    let filtered = allProducts;
-
+    let filtered = [...allProducts];
+    // Filter by category
     if (filters.category) {
-      filtered = filtered.filter(p => p.category === filters.category);
+      filtered = filtered.filter(product => product.category === filters.category);
     }
 
+    // Filter by search query (case insensitive)
     if (filters.searchQuery.trim() !== '') {
-      filtered = filtered.filter(p =>
-        p.name.toLowerCase().includes(filters.searchQuery.toLowerCase())
+      filtered = filtered.filter(product =>
+        product.name.toLowerCase().includes(filters.searchQuery.toLowerCase())
       );
     }
 
+    // Filter by stock status
     if (filters.inStock !== null) {
-      filtered = filtered.filter(p => p.in_stock === filters.inStock);
+      filtered = filtered.filter(product => product.in_stock === filters.inStock);
     }
 
-    filtered = filtered.filter(p => 
-      p.price >= filters.priceRange[0] && p.price <= filters.priceRange[1]
+    // Filter by price range
+    filtered = filtered.filter(product =>
+      product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
     );
 
+    // Sorting
     switch (filters.sortBy) {
       case 'name':
         filtered = filtered.slice().sort((a, b) => a.name.localeCompare(b.name));
@@ -110,7 +114,7 @@ const AllTopSellers = () => {
           />
 
           <ProductGrid
-            products={allProducts}
+            products={filteredProducts}
             loading={loading}
             onAddToCart={addToCart}
             emptyTitle="No products found under $20"

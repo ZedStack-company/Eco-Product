@@ -59,9 +59,9 @@ class SupabaseProductService {
         case 'New Arrivals':
           query = query.eq('is_new_arrival', true);
           break;
-        case 'Under $20':
-          query = query.lte('price', 20);
-          break;
+        // case 'Under $20':
+        //   query = query.lte('price', 20);
+        //   break;
         case 'Seasonal Sale':
           query = query.eq('seasonal_sale', true);
           break;

@@ -1,4 +1,5 @@
 import SectionTitle from '../components/ui/SectionTitle';
+import HeroSection from '../components/ui/HeroSection';
 import heroForest from '../assets/hero-forest.jpg';
 
 const ThemeFeaturesPage = () => {
@@ -32,14 +33,14 @@ const ThemeFeaturesPage = () => {
   return (
     <div>
       {/* Hero Section */}
-      <section className="section-eco">
-        <div className="container-eco text-center">
-          <SectionTitle 
-            title="Designed for luxury brands, delivering unrivaled speed and elegance"
-            className="mb-16 max-w-4xl mx-auto"
-          />
-        </div>
-      </section>
+        <HeroSection
+        backgroundImage={heroForest}
+        title="Designed for luxury brands, delivering unrivaled speed and elegance"
+        parallax={true}
+        className="min-h-[60vh]"
+      />
+
+
 
       {/* Features Grid */}
       <section className="section-eco bg-muted/30">

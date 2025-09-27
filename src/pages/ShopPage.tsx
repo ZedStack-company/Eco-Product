@@ -9,13 +9,14 @@ import { useShopProducts } from '@/hooks/useShopProducts';
 import { useCart } from '@/hooks/useCart';
 import productsHero from '../assets/products-hero.jpg';
 
-const ShopPage = () => {
+
+const ShopPage =  () => {
   const { categories } = useCategories();
   const [filters, setFilters] = useState<FilterState>({
     category: null,
     sortBy: 'name',
     searchQuery: '',
-    priceRange: [0, 1000],
+    priceRange: [0, 200000000],
     inStock: null,
   });
 
@@ -110,6 +111,7 @@ const ShopPage = () => {
             onFiltersChange={handleFiltersChange}
             showSearch={true}
             showStockFilter={true}
+            showCategoryFilter = {true}
           />
 
           {/* Products Grid */}

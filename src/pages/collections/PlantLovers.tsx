@@ -20,7 +20,7 @@ const PlantLovers = () => {
     category: null,
     sortBy: 'price',
     searchQuery: '',
-    priceRange: [0, 20],
+    priceRange: [0, 2000000],
     inStock: null,
   });
 
@@ -110,7 +110,7 @@ const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
           />
 
           <ProductGrid
-            products={allProducts}
+            products={filteredProducts}
             loading={loading}
             onAddToCart={addToCart}
             emptyTitle="No products found under $20"

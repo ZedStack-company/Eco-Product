@@ -14,13 +14,14 @@ export interface FilterState {
 }
 
 interface ProductFiltersProps {
-  categories: string[];
+  categories?: string[];
   filters: FilterState;
   onFiltersChange: (filters: FilterState) => void;
   className?: string;
   showSearch?: boolean;
   showPriceRange?: boolean;
   showStockFilter?: boolean;
+  showCategoryFilter?: boolean;  // Add this line
 }
 
 const ProductFilters = ({
@@ -31,6 +32,7 @@ const ProductFilters = ({
   showSearch = true,
   showPriceRange = false,
   showStockFilter = false,
+  showCategoryFilter = false,  // Add this here
 }: ProductFiltersProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -75,22 +77,25 @@ const ProductFilters = ({
           )}
 
           {/* Category Filter */}
-          <Select 
-            value={filters.category || 'all'} 
-            onValueChange={(value) => updateFilter('category', value === 'all' ? null : value)}
-          >
-            <SelectTrigger className="w-full sm:w-48">
-              <SelectValue placeholder="All Categories" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {categories.filter(cat => cat !== 'All').map((category) => (
-                <SelectItem key={category} value={category}>
-                  {category}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            {showCategoryFilter && (
+              <Select 
+                value={filters.category || 'all'} 
+                onValueChange={(value) => updateFilter('category', value === 'all' ? null : value)}
+              >
+                <SelectTrigger className="w-full sm:w-48">
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {(categories ?? []).filter(cat => cat !== 'All').map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
 
           {/* Sort */}
           <Select 
@@ -105,7 +110,7 @@ const ProductFilters = ({
               <SelectItem value="name-desc">Name (Z-A)</SelectItem>
               <SelectItem value="price">Price (Low to High)</SelectItem>
               <SelectItem value="price-desc">Price (High to Low)</SelectItem>
-              <SelectItem value="newest">Newest First</SelectItem>
+              {/* <SelectItem value="newest">Newest First</SelectItem> */}
             </SelectContent>
           </Select>
         </div>

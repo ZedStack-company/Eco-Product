@@ -19,7 +19,7 @@ const Cruelty = () => {
     category: null,
     sortBy: 'price',
     searchQuery: '',
-    priceRange: [0, 20],
+    priceRange: [0, 2000000000],
     inStock: null,
   });
 
@@ -109,7 +109,7 @@ const Cruelty = () => {
           />
 
           <ProductGrid
-            products={allProducts}
+            products={filteredProducts}
             loading={loading}
             onAddToCart={addToCart}
             emptyTitle="No products found under $20"
