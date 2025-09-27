@@ -31,7 +31,8 @@ const ProductForm = ({ product, onSubmit, onCancel, isLoading }: ProductFormProp
     featured: false
   });
 
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [newTag, setNewTag] = useState('');
 
   useEffect(() => {
@@ -45,32 +46,26 @@ const ProductForm = ({ product, onSubmit, onCancel, isLoading }: ProductFormProp
         tags: [],
         isTopSeller: (product.average_rating || 0) >= 4,
         inStock: product.in_stock,
-        featured: false
+        featured:false
       });
+
+      // If product already has images, show previews
+      if (product.images && product.images.length > 0) {
+        setPreviewUrls(product.images);
+      }
     }
   }, [product]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.name.trim()) {
-      alert('Product name is required');
-      return;
-    }
-    
-    if (formData.price <= 0) {
-      alert('Price must be greater than 0');
-      return;
-    }
-    
-    if (!formData.category) {
-      alert('Category is required');
-      return;
-    }
+
+    if (!formData.name.trim()) return alert('Product name is required');
+    if (formData.price <= 0) return alert('Price must be greater than 0');
+    if (!formData.category) return alert('Category is required');
 
     const submitData: ProductFormData = {
       ...formData,
-      image: imageFile || undefined
+      image: imageFiles // send all images
     };
 
     await onSubmit(submitData);
@@ -94,9 +89,13 @@ const ProductForm = ({ product, onSubmit, onCancel, isLoading }: ProductFormProp
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      setImageFiles(filesArray);
+
+      // Generate previews
+      const previews = filesArray.map(file => URL.createObjectURL(file));
+      setPreviewUrls(previews);
     }
   };
 
@@ -115,9 +114,10 @@ const ProductForm = ({ product, onSubmit, onCancel, isLoading }: ProductFormProp
           </Button>
         </div>
       </CardHeader>
-      
+
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Name + Price */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="name">Product Name *</Label>
@@ -145,6 +145,7 @@ const ProductForm = ({ product, onSubmit, onCancel, isLoading }: ProductFormProp
             </div>
           </div>
 
+          {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Textarea
@@ -156,25 +157,48 @@ const ProductForm = ({ product, onSubmit, onCancel, isLoading }: ProductFormProp
             />
           </div>
 
+          {/* Multiple Image Upload */}
           <div className="space-y-2">
-            <Label htmlFor="image">Product Image</Label>
+            <Label htmlFor="image">Product Images</Label>
             <div className="flex items-center space-x-2">
               <Input
                 id="image"
                 type="file"
                 accept="image/*"
+                multiple
                 onChange={handleImageChange}
                 className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
               />
               <Upload className="h-4 w-4 text-muted-foreground" />
             </div>
-            {imageFile && (
-              <p className="text-sm text-muted-foreground">
-                Selected: {imageFile.name}
-              </p>
+
+            {/* Preview selected images */}
+            {previewUrls.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                {previewUrls.map((url, index) => (
+                  <div key={index} className="relative group">
+                    <img
+                      src={url}
+                      alt={`preview-${index}`}
+                      className="rounded-lg w-full h-24 object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPreviewUrls(prev => prev.filter((_, i) => i !== index));
+                        setImageFiles(prev => prev.filter((_, i) => i !== index));
+                      }}
+                      className="absolute top-1 right-1 bg-black bg-opacity-50 rounded-full p-1 text-white opacity-0 group-hover:opacity-100 transition"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
 
+          {/* Category + SubCategory */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="category">Category *</Label>
@@ -206,16 +230,18 @@ const ProductForm = ({ product, onSubmit, onCancel, isLoading }: ProductFormProp
                   <SelectValue placeholder="Select sub category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {formData.category && CATEGORIES[formData.category as keyof typeof CATEGORIES]?.map(subCat => (
-                    <SelectItem key={subCat} value={subCat}>
-                      {subCat}
-                    </SelectItem>
-                  ))}
+                  {formData.category &&
+                    CATEGORIES[formData.category as keyof typeof CATEGORIES]?.map(subCat => (
+                      <SelectItem key={subCat} value={subCat}>
+                        {subCat}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
 
+          {/* Tags */}
           <div className="space-y-4">
             <Label>Tags</Label>
             <div className="flex space-x-2">
@@ -229,14 +255,14 @@ const ProductForm = ({ product, onSubmit, onCancel, isLoading }: ProductFormProp
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
-            
+
             {formData.tags.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {formData.tags.map(tag => (
                   <Badge key={tag} variant="secondary" className="cursor-pointer">
                     {tag}
-                    <X 
-                      className="h-3 w-3 ml-1" 
+                    <X
+                      className="h-3 w-3 ml-1"
                       onClick={() => handleRemoveTag(tag)}
                     />
                   </Badge>
@@ -245,6 +271,7 @@ const ProductForm = ({ product, onSubmit, onCancel, isLoading }: ProductFormProp
             )}
           </div>
 
+          {/* Switches */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <Label htmlFor="inStock">In Stock</Label>
@@ -274,6 +301,7 @@ const ProductForm = ({ product, onSubmit, onCancel, isLoading }: ProductFormProp
             </div>
           </div>
 
+          {/* Buttons */}
           <div className="flex space-x-4">
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancel

@@ -13,7 +13,7 @@ export interface ProductFormData {
   name: string;
   price: number;
   description: string;
-  image?: File;
+  image?: File[];
   category: string;
   subCategory: string;
   tags: string[];

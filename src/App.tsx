@@ -87,15 +87,15 @@ useEffect(() => {
           <Route path="seasonal-sale" element={<SeasonalSalePage />} />
           {/* <Route path="collections/new-arrivals" element={<NewArrivalsPage />} /> */}
           <Route path="/blankets" element={<Blanket/>} />
-          <Route path="/spring-feeling" element={<ArtAndPrint/>} />
-          <Route path="/plant-lovers" element={<Books/>} />
-          <Route path="/home-decor" element={<Incense/>} />
+          <Route path="/spring-feeling" element={<SpringFeelings/>} />
+          <Route path="/plant-lovers" element={<PlantLovers/>} />
+          <Route path="/home-decor" element={<HomeDecore/>} />
           <Route path="/cruelty-free-beauty" element={<Cruelty/>} />
-          <Route path="/art-prints" element={<Food/>} />
-          <Route path="/books-magazines" element={<Garden/>} />
-          <Route path="/candles-incense" element={<HomeDecore/>} />
-          <Route path="/food-drink" element={<PlantLovers/>} />
-          <Route path="/garden" element={<SpringFeelings/>} />
+          <Route path="/art-prints" element={<ArtAndPrint/>} />
+          <Route path="/books-magazines" element={<Books/>} />
+          <Route path="/candles-incense" element={<Incense/>} />
+          <Route path="/food-drink" element={<Food/>} />
+          <Route path="/garden" element={<Garden/>} />
           <Route path="/top-sellers" element={<AllTopSellers/>} />
           {/* <Route path="collections/featured" element={<FeaturedPage />} />
           <Route path="collections" element={<CollectionsPage />} /> */}

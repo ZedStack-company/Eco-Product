@@ -76,11 +76,10 @@ class SupabaseProductService {
   }
 
   async addProduct(productData: ProductFormData): Promise<Product | null> {
-    let imageUrl = '';
+    let imageUrls: string[] = [];
 
-    // Upload image if provided
-    if (productData.image) {
-      imageUrl = await this.uploadImage(productData.image);
+    if (productData.image && productData.image.length > 0) {
+      imageUrls = await this.uploadImages(productData.image);
     }
 
     const { data, error } = await (supabase as any)
@@ -89,7 +88,8 @@ class SupabaseProductService {
         name: productData.name,
         price: productData.price,
         description: productData.description,
-        image_url: imageUrl,
+        image_url: imageUrls.length > 0 ? imageUrls[0] : null, // keep first as primary
+        images: imageUrls,
         category: productData.category,
         sub_category: productData.subCategory,
         tags: productData.tags,
@@ -109,10 +109,10 @@ class SupabaseProductService {
   }
 
   async updateProduct(id: string, productData: ProductFormData): Promise<Product | null> {
-    let imageUrl = '';
+    let imageUrls: string[] = [];
 
-    if (productData.image) {
-      imageUrl = await this.uploadImage(productData.image);
+    if (productData.image && productData.image.length > 0) {
+      imageUrls = await this.uploadImages(productData.image);
     }
 
     const updateData: any = {
@@ -127,8 +127,9 @@ class SupabaseProductService {
       featured: productData.featured
     };
 
-    if (imageUrl) {
-      updateData.image_url = imageUrl;
+    if (imageUrls.length > 0) {
+      updateData.image_url = imageUrls[0];
+      updateData.images = imageUrls;
     }
 
     const { data, error } = await (supabase as any)
@@ -156,29 +157,29 @@ class SupabaseProductService {
       console.error('Error deleting product:', error);
       return false;
     }
-
     return true;
   }
 
-  private async uploadImage(file: File): Promise<string> {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Date.now()}-${Math.random()}.${fileExt}`;
-    const filePath = `products/${fileName}`;
+  // ✅ Updated: Support multiple image uploads
+  private async uploadImages(files: File[]): Promise<string[]> {
+    const uploadedUrls: string[] = [];
 
-    const { error } = await supabase.storage
-      .from('product-images')
-      .upload(filePath, file);
+    for (const file of files) {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random()}.${fileExt}`;
+      const filePath = `products/${fileName}`;
 
-    if (error) {
-      console.error('Error uploading image:', error);
-      return '';
+      const { error } = await supabase.storage.from('product-images').upload(filePath, file);
+      if (error) {
+        console.error('Error uploading image:', error);
+        continue;
+      }
+
+      const { data } = supabase.storage.from('product-images').getPublicUrl(filePath);
+      uploadedUrls.push(data.publicUrl);
     }
 
-    const { data } = supabase.storage
-      .from('product-images')
-      .getPublicUrl(filePath);
-
-    return data.publicUrl;
+    return uploadedUrls;
   }
 
   private transformSupabaseProduct(data: any): Product {
@@ -205,17 +206,12 @@ class SupabaseProductService {
     return data.map(item => this.transformSupabaseProduct(item));
   }
 
-  // Subscribe to real-time changes
   subscribeToProducts(callback: (products: Product[]) => void) {
     return supabase
       .channel('products')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'products' },
-        () => {
-          // Refetch all products when changes occur
-          this.getAllProducts().then(callback);
-        }
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
+        this.getAllProducts().then(callback);
+      })
       .subscribe();
   }
 }

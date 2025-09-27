@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Product } from '@/types/product';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -28,6 +29,22 @@ const ProductCard = ({
   showAddToCart = true,
   showQuickView = false,
 }: ProductCardProps) => {
+  const [hovered, setHovered] = useState(false);
+  const [secondaryLoaded, setSecondaryLoaded] = useState(false);
+
+  const primaryImage = product.images?.[0] || product.image_url || '/placeholder.svg';
+  const secondaryImage = product.images?.[1];
+  const hasMultipleImages = product.images && product.images.length > 1;
+
+  // Preload secondary image for smooth hover transition
+  useEffect(() => {
+    if (hasMultipleImages && secondaryImage) {
+      const img = new Image();
+      img.src = secondaryImage;
+      img.onload = () => setSecondaryLoaded(true);
+    }
+  }, [hasMultipleImages, secondaryImage]);
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
     onAddToCart?.(product);
@@ -39,16 +56,37 @@ const ProductCard = ({
   };
 
   return (
-    <Card className={cn(variantClasses[variant], className)}>
+    <Card
+      className={cn(variantClasses[variant], className)}
+      onMouseEnter={() => hasMultipleImages && setHovered(true)}
+      onMouseLeave={() => hasMultipleImages && setHovered(false)}
+    >
       <CardContent className="p-0">
-        {/* Product Image */}
-        <div className="product-card-image relative">
+        {/* Product Image Wrapper */}
+        <div className="relative w-full aspect-square overflow-hidden">
+          {/* Primary Image */}
           <img
-            src={product.image_url || '/placeholder.svg'}
+            src={primaryImage}
             alt={product.name}
-            className="image-primary w-full h-full object-cover"
+            className={cn(
+              'absolute inset-0 w-full h-full object-cover transition-opacity duration-300',
+              hovered && hasMultipleImages ? 'opacity-0' : 'opacity-100'
+            )}
             loading="lazy"
           />
+
+          {/* Secondary Image - render only if available and preloaded */}
+          {hasMultipleImages && secondaryLoaded && (
+            <img
+              src={secondaryImage!}
+              alt={`${product.name} - alternate`}
+              className={cn(
+                'absolute inset-0 w-full h-full object-cover transition-opacity duration-300',
+                hovered ? 'opacity-100' : 'opacity-0'
+              )}
+              loading="lazy"
+            />
+          )}
 
           {/* Stock Badge */}
           {!product.in_stock && (
@@ -57,25 +95,18 @@ const ProductCard = ({
             </div>
           )}
         </div>
-        
+
         {/* Product Details */}
-        <div className={cn(
-          'text-center',
-          variant === 'compact' ? 'p-3' : 'p-4'
-        )}>
-          <h3 className="product-card-title">
-            {product.name}
-          </h3>
-          <p className="product-card-price">
-            ${product.price.toFixed(2)}
-          </p>
-          
+        <div className={cn('text-center', variant === 'compact' ? 'p-3' : 'p-4')}>
+          <h3 className="product-card-title">{product.name}</h3>
+          <p className="product-card-price">${product.price.toFixed(2)}</p>
+
           {variant === 'featured' && product.description && (
             <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
               {product.description}
             </p>
           )}
-          
+
           {showAddToCart && variant !== 'compact' && (
             <Button
               onClick={handleAddToCart}
