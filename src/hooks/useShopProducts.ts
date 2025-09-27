@@ -8,7 +8,7 @@ export const useShopProducts = (category?: string, limit?: number) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // ✅ fetch directly from Supabase
+  // Fetch products
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
@@ -22,7 +22,7 @@ export const useShopProducts = (category?: string, limit?: number) => {
       }
 
       setProducts(data ?? []);
-      console.log(`✅ Loaded ${data?.length ?? 0} products for category "${category || 'All'}"`);
+      console.log(`✅ Loaded ${data?.length ?? 0} products for "${category || 'All'}"`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch products');
     } finally {
@@ -33,26 +33,15 @@ export const useShopProducts = (category?: string, limit?: number) => {
   useEffect(() => {
     fetchProducts();
 
-    const subscription = supabaseProductService.subscribeToProducts((updatedProducts) => {
-      console.log("📡 Realtime update received:", updatedProducts.length);
-
-      let filteredProducts = updatedProducts;
-
-      if (category) {
-        const cat = category.trim().toLowerCase();
-
-        // ✅ Normalize both sides
-        filteredProducts = updatedProducts.filter(
-          (p) => p.category?.trim().toLowerCase() === cat
-        );
-      }
-
-      if (limit) {
-        filteredProducts = filteredProducts.slice(0, limit);
-      }
-
-      setProducts(filteredProducts);
-    });
+    // Subscribe to realtime updates
+    const subscription = supabaseProductService.subscribeToProducts(
+      (updatedProducts) => {
+        console.log("📡 Realtime update received for:", category || 'All');
+        setProducts(updatedProducts);
+      },
+      category,
+      limit
+    );
 
     return () => {
       subscription.unsubscribe();

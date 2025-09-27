@@ -12,14 +12,14 @@ import blogAutumn from '../../assets/blog-autumn.jpg';
 
 const Incense = () => {
   const { categories } = useCategories();
-  const { products: allProducts, loading } = useShopProducts('Candles & Incense');
+  const { products: allProducts, loading } = useShopProducts();
   const { addToCart } = useCart();
 
   const [filters, setFilters] = useState<FilterState>({
-    category: null,
+    category: 'Candles & Incense',
     sortBy: 'price',
     searchQuery: '',
-    priceRange: [0, 20],
+    priceRange: [0, 200000000],
     inStock: null,
   });
 

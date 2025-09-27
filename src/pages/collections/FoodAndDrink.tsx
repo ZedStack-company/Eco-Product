@@ -12,14 +12,14 @@ import { Product } from '@/types/product'; // ✅ Product type
 
 const Food = () => {
   const { categories } = useCategories();
-  const { products: allProducts, loading } = useShopProducts('Food & Drink');
+  const { products: allProducts, loading } = useShopProducts();
   const { addToCart } = useCart();
 
   const [filters, setFilters] = useState<FilterState>({
-    category: null,
+    category: "Food & Drink",
     sortBy: 'price',
     searchQuery: '',
-    priceRange: [0, 20],
+    priceRange: [0, 2000000],
     inStock: null,
   });
 
@@ -110,7 +110,7 @@ const Food = () => {
           />
 
           <ProductGrid
-            products={allProducts}
+            products={filteredProducts}
             loading={loading}
             onAddToCart={addToCart}
             emptyTitle="No products found under $20"

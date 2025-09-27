@@ -14,14 +14,14 @@ import { Product } from '@/types/product'; // ✅ Product type
 const SeasonalSalePage = () => {
   const { categories } = useCategories();
   const [filters, setFilters] = useState<FilterState>({
-    category: null,
+    category: 'Seasonal Sale',
     sortBy: 'name',
     searchQuery: '',
     priceRange: [0, 1000],
     inStock: null,
   });
 
-  const { products: allProducts, loading } = useShopProducts('Seasonal Sale');
+  const { products: allProducts, loading } = useShopProducts();
 
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
@@ -132,7 +132,7 @@ const SeasonalSalePage = () => {
           />
 
           <ProductGrid
-            products={allProducts}
+            products={filteredProducts}
             loading={loading}
             onAddToCart={addToCart}
             emptyTitle="No seasonal products available"
