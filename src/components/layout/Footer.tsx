@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer className="bg-eco-forest text-background">
       <div className="container-eco py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 place-items-center ">
           {/* Logo and Description */}
           <div className="md:col-span-1">
             <h3 className="text-3xl font-light tracking-widest mb-4">ECO</h3>
@@ -24,20 +24,20 @@ const Footer = () => {
               <Link to="/search" className="block hover:text-background transition-colors">Search</Link>
               <Link to="/journal" className="block hover:text-background transition-colors">Journal</Link>
               <Link to="/about" className="block hover:text-background transition-colors">About</Link>
-              <Link to="/returns" className="block hover:text-background transition-colors">Returns & Refunds</Link>
               <Link to="/theme-features" className="block hover:text-background transition-colors">Theme Features</Link>
+              {/* <Link to="/returns" className="block hover:text-background transition-colors">Returns & Refunds</Link> */}
             </div>
           </div>
 
           {/* Additional Info */}
-          <div className="md:col-span-1">
+          {/* <div className="md:col-span-1">
             <div className="space-y-2 text-sm text-background/80">
               <Link to="/shipping" className="block hover:text-background transition-colors">Shipping Info</Link>
               <Link to="/contact" className="block hover:text-background transition-colors">Contact Us</Link>
               <Link to="/privacy" className="block hover:text-background transition-colors">Privacy Policy</Link>
               <Link to="/terms" className="block hover:text-background transition-colors">Terms of Service</Link>
             </div>
-          </div>
+          </div> */}
 
           {/* Newsletter */}
           <div className="md:col-span-1">
@@ -61,7 +61,7 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className="border-t border-background/20 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm text-background/60">POWERED BY SHOPIFY</p>
+            <p className="text-sm text-background/60">POWERED BY ZedStack</p>
             <div className="flex space-x-4 mt-4 md:mt-0">
               {/* Payment Icons would go here */}
               <div className="flex space-x-2 text-background/60">

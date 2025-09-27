@@ -80,7 +80,7 @@ const Navbar = () => {
 }, []);
 
   return (
-    <nav className={`fixed top-0 w-full z-50 bg-transparent hover:bg-background transition-all duration-300 group border-b border-black/20 ${
+    <nav className={`fixed top-0 w-full z-50 bg-transparent hover:bg-background transition-all duration-300 group ${
       isVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
     }`}
     style={{ transition: 'opacity 0.3s ease' }}>

@@ -103,6 +103,11 @@ useEffect(() => {
           <Route path="journal" element={<JournalPage />} />
           <Route path="theme-features" element={<ThemeFeaturesPage />} />
           <Route path="checkout" element={<CheckoutPage />} />
+          <Route path="returns" element={<CheckoutPage />} />
+          <Route path="shipping" element={<CheckoutPage />} />
+          <Route path="contact" element={<CheckoutPage />} />
+          <Route path="privacy" element={<CheckoutPage />} />
+          <Route path="terms" element={<CheckoutPage />} />
           <Route path="*" element={<NotFound />} />
         </Route>
 
