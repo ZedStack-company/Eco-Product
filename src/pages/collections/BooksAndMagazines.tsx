@@ -108,7 +108,7 @@ const Books = () => {
           />
 
           <ProductGrid
-            products={filteredProducts}
+            products={allProducts}
             loading={loading}
             onAddToCart={addToCart}
             emptyTitle="No products found under $20"

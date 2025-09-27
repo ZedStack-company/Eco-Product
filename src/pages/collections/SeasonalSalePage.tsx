@@ -8,6 +8,8 @@ import { useCategories } from '@/hooks/useProducts';
 import { useShopProducts } from '@/hooks/useShopProducts';
 import { useCart } from '@/hooks/useCart';
 import blogCrafts from '../../assets/blog-crafts.jpg';
+import { Product } from '@/types/product'; // ✅ Product type
+
 
 const SeasonalSalePage = () => {
   const { categories } = useCategories();
@@ -21,7 +23,8 @@ const SeasonalSalePage = () => {
 
   const { products: allProducts, loading } = useShopProducts('Seasonal Sale');
 
-  const [filteredProducts, setFilteredProducts] = useState(allProducts);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+
 
   const { addToCart } = useCart();
 
@@ -31,7 +34,7 @@ const SeasonalSalePage = () => {
 
   // Local filter and sort logic on products change
   useEffect(() => {
-    let filtered = allProducts;
+    let filtered =  [...allProducts];
 
     if (filters.category) {
       filtered = filtered.filter(p => p.category === filters.category);
@@ -129,7 +132,7 @@ const SeasonalSalePage = () => {
           />
 
           <ProductGrid
-            products={filteredProducts}
+            products={allProducts}
             loading={loading}
             onAddToCart={addToCart}
             emptyTitle="No seasonal products available"

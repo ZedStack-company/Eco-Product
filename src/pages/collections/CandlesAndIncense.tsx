@@ -6,6 +6,7 @@ import ProductFilters, { FilterState } from '@/components/product/ProductFilters
 import SectionTitle from '@/components/ui/SectionTitle';
 import { useCategories } from '@/hooks/useProducts';
 import { useShopProducts } from '@/hooks/useShopProducts';
+import { Product } from '@/types/product';
 import { useCart } from '@/hooks/useCart';
 import blogAutumn from '../../assets/blog-autumn.jpg';
 
@@ -22,6 +23,7 @@ const Incense = () => {
     inStock: null,
   });
 
+
   const [filteredProducts, setFilteredProducts] = useState(allProducts);
 
   const handleFiltersChange = (newFilters: FilterState) => {
@@ -30,7 +32,7 @@ const Incense = () => {
 
   // Local filtering and sorting effect
   useEffect(() => {
-    let filtered = allProducts;
+    let filtered =  [...allProducts];
 
     if (filters.category) {
       filtered = filtered.filter(p => p.category === filters.category);

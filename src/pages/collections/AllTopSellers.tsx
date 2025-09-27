@@ -7,6 +7,7 @@ import SectionTitle from '@/components/ui/SectionTitle';
 import { useCategories } from '@/hooks/useProducts';
 import { useShopProducts } from '@/hooks/useShopProducts';
 import { useCart } from '@/hooks/useCart';
+import { Product } from '@/types/product';
 import blogAutumn from '../../assets/blog-autumn.jpg';
 
 const AllTopSellers = () => {
@@ -22,7 +23,8 @@ const AllTopSellers = () => {
     inStock: null,
   });
 
-  const [filteredProducts, setFilteredProducts] = useState(allProducts);
+
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
   const handleFiltersChange = (newFilters: FilterState) => {
     setFilters(newFilters);
@@ -108,7 +110,7 @@ const AllTopSellers = () => {
           />
 
           <ProductGrid
-            products={filteredProducts}
+            products={allProducts}
             loading={loading}
             onAddToCart={addToCart}
             emptyTitle="No products found under $20"

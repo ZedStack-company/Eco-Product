@@ -1,61 +1,63 @@
-import { useState, useEffect } from 'react';
+// hooks/useShopProducts.ts
+import { useState, useEffect, useCallback } from 'react';
 import { supabaseProductService } from '@/services/supabaseProductService';
-import { Product, ProductFilters } from '@/types/product';
+import { Product } from '@/types/product';
 
 export const useShopProducts = (category?: string, limit?: number) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchProducts = async () => {
+  // ✅ fetch directly from Supabase
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
+
       let data: Product[];
-      
       if (category) {
-        data = await supabaseProductService.getProductsByCategory(category, limit);
+        data = await supabaseProductService.getProductsByCategory(category.trim(), limit);
       } else {
         data = await supabaseProductService.getAllProducts();
       }
-      
-      setProducts(data);
+
+      setProducts(data ?? []);
+      console.log(`✅ Loaded ${data?.length ?? 0} products for category "${category || 'All'}"`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch products');
     } finally {
       setLoading(false);
     }
-  };
+  }, [category, limit]);
 
   useEffect(() => {
     fetchProducts();
 
-    // Subscribe to real-time updates
     const subscription = supabaseProductService.subscribeToProducts((updatedProducts) => {
+      console.log("📡 Realtime update received:", updatedProducts.length);
+
+      let filteredProducts = updatedProducts;
+
       if (category) {
-        // Filter products for specific category
-        const filteredProducts = updatedProducts.filter(product => {
-          if (category === 'Under $20') return product.is_under_20;
-          if (category === 'New Arrivals') return product.is_new_arrival = true;
-          if (category === 'Top Sellers') return (product.average_rating || 0) >= 4;
-          if (category === 'Shop Everything') return true;
-          return product.category === category;
-        });
-        setProducts(limit ? filteredProducts.slice(0, limit) : filteredProducts);
-      } else {
-        setProducts(updatedProducts);
+        const cat = category.trim().toLowerCase();
+
+        // ✅ Normalize both sides
+        filteredProducts = updatedProducts.filter(
+          (p) => p.category?.trim().toLowerCase() === cat
+        );
       }
+
+      if (limit) {
+        filteredProducts = filteredProducts.slice(0, limit);
+      }
+
+      setProducts(filteredProducts);
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [category, limit]);
+  }, [fetchProducts, category, limit]);
 
-  return {
-    products,
-    loading,
-    error,
-    refetch: fetchProducts
-  };
+  return { products, loading, error, refetch: fetchProducts };
 };

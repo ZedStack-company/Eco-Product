@@ -10,11 +10,15 @@ export interface Product {
   in_stock: boolean;
   is_new_arrival: boolean;
   is_under_20: boolean;
+  is_top_seller?: boolean;   // ✅ add this
+  featured?: boolean;        // ✅ add this if you use it
+  tags?: string[];           // ✅ add this if you use it
   created_at?: string;
   updated_at?: string;
   average_rating?: number;
   review_count?: number;
 }
+
 
 export interface ProductVariant {
   id: string;

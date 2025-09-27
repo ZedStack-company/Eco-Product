@@ -8,6 +8,8 @@ import { useCategories } from '@/hooks/useProducts';
 import { useShopProducts } from '@/hooks/useShopProducts';
 import { useCart } from '@/hooks/useCart';
 import blogAutumn from '../../assets/blog-autumn.jpg';
+import { Product } from '@/types/product'; // ✅ Product type
+
 
 const SpringFeelings = () => {
   const { categories } = useCategories();
@@ -22,7 +24,8 @@ const SpringFeelings = () => {
     inStock: null,
   });
 
-  const [filteredProducts, setFilteredProducts] = useState(allProducts);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+
 
   const handleFiltersChange = (newFilters: FilterState) => {
     setFilters(newFilters);
@@ -30,7 +33,7 @@ const SpringFeelings = () => {
 
   // Local filtering and sorting effect
   useEffect(() => {
-    let filtered = allProducts;
+    let filtered = [...allProducts];
 
     if (filters.category) {
       filtered = filtered.filter(p => p.category === filters.category);
@@ -108,7 +111,7 @@ const SpringFeelings = () => {
           />
 
           <ProductGrid
-            products={filteredProducts}
+            products={allProducts}
             loading={loading}
             onAddToCart={addToCart}
             emptyTitle="No products found under $20"

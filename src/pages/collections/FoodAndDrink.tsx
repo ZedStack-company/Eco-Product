@@ -8,6 +8,7 @@ import { useCategories } from '@/hooks/useProducts';
 import { useShopProducts } from '@/hooks/useShopProducts';
 import { useCart } from '@/hooks/useCart';
 import blogAutumn from '../../assets/blog-autumn.jpg';
+import { Product } from '@/types/product'; // ✅ Product type
 
 const Food = () => {
   const { categories } = useCategories();
@@ -30,7 +31,8 @@ const Food = () => {
 
   // Local filtering and sorting effect
   useEffect(() => {
-    let filtered = allProducts;
+    let filtered =  [...allProducts];
+
 
     if (filters.category) {
       filtered = filtered.filter(p => p.category === filters.category);
@@ -108,7 +110,7 @@ const Food = () => {
           />
 
           <ProductGrid
-            products={filteredProducts}
+            products={allProducts}
             loading={loading}
             onAddToCart={addToCart}
             emptyTitle="No products found under $20"
