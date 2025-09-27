@@ -104,7 +104,7 @@ const ProductTable = ({ products, loading, onEdit, onDelete, onFilter }: Product
                 </div>
               </div>
 
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <label className="text-sm font-medium">Top Sellers</label>
                 <Select
                   value={filters.isTopSeller?.toString() || 'all'}
@@ -119,7 +119,7 @@ const ProductTable = ({ products, loading, onEdit, onDelete, onFilter }: Product
                     <SelectItem value="false">Regular products</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
+              </div> */}
             </div>
 
             <Button type="submit" className="w-full md:w-auto">

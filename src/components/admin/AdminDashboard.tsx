@@ -113,7 +113,7 @@ const AdminDashboard = () => {
         <Tabs defaultValue="products" className="space-y-6">
           <TabsList>
             <TabsTrigger value="products">Products</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            {/* <TabsTrigger value="analytics">Analytics</TabsTrigger> */}
           </TabsList>
 
           <TabsContent value="products" className="space-y-6">
@@ -139,7 +139,7 @@ const AdminDashboard = () => {
                 </CardContent>
               </Card>
 
-              <Card>
+              {/* <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Top Sellers</CardTitle>
                   <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -147,7 +147,7 @@ const AdminDashboard = () => {
                 <CardContent>
                   <div className="text-2xl font-bold">{topSellerProducts}</div>
                 </CardContent>
-              </Card>
+              </Card> */}
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
