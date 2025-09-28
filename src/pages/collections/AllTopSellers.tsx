@@ -7,12 +7,13 @@ import SectionTitle from '@/components/ui/SectionTitle';
 import { useCategories } from '@/hooks/useProducts';
 import { useShopProducts } from '@/hooks/useShopProducts';
 import { useCart } from '@/hooks/useCart';
-import { Product } from '@/types/product';
+import { Product, Review } from '@/types/product';
+import { ReviewService } from '@/services/reviewService';
 import blogAutumn from '../../assets/blog-autumn.jpg';
 
 const AllTopSellers = () => {
   const { categories } = useCategories();
-  const { products: allProducts, loading } = useShopProducts('Top Sellers');
+  const { products: allProducts, loading } = useShopProducts();
   const { addToCart } = useCart();
 
   const [filters, setFilters] = useState<FilterState>({
@@ -23,74 +24,72 @@ const AllTopSellers = () => {
     inStock: null,
   });
 
-
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
   const handleFiltersChange = (newFilters: FilterState) => {
     setFilters(newFilters);
   };
 
-  // Local filtering and sorting effect
   useEffect(() => {
-    let filtered = [...allProducts];
-    // Filter by category
-    if (filters.category) {
-      filtered = filtered.filter(product => product.category === filters.category);
-    }
-
-    // Filter by search query (case insensitive)
-    if (filters.searchQuery.trim() !== '') {
-      filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(filters.searchQuery.toLowerCase())
+    const processProducts = async () => {
+      // Step 1: Attach review counts to products
+      const productsWithCounts = await Promise.all(
+        allProducts.map(async (p) => {
+          const reviews: Review[] = await ReviewService.getProductReviews(p.id);
+          return { ...p, reviewCount: reviews.length };
+        })
       );
-    }
 
-    // Filter by stock status
-    if (filters.inStock !== null) {
-      filtered = filtered.filter(product => product.in_stock === filters.inStock);
-    }
+      // Step 2: Only keep products with at least 1 review
+      let filtered = productsWithCounts.filter((p) => p.reviewCount > 0);
 
-    // Filter by price range
-    filtered = filtered.filter(product =>
-      product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
-    );
+      // Step 3: Filter by category
+      if (filters.category) {
+        filtered = filtered.filter((product) => product.category === filters.category);
+      }
 
-    // Sorting
-    switch (filters.sortBy) {
-      case 'name':
-        filtered = filtered.slice().sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case 'name-desc':
-        filtered = filtered.slice().sort((a, b) => b.name.localeCompare(a.name));
-        break;
-      case 'price':
-        filtered = filtered.slice().sort((a, b) => a.price - b.price);
-        break;
-      case 'price-desc':
-        filtered = filtered.slice().sort((a, b) => b.price - a.price);
-        break;
-      case 'newest':
-        filtered = filtered.slice().sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-        break;
-    }
+      // Step 4: Filter by search query
+      if (filters.searchQuery.trim() !== '') {
+        filtered = filtered.filter((product) =>
+          product.name.toLowerCase().includes(filters.searchQuery.toLowerCase())
+        );
+      }
 
-    setFilteredProducts(filtered);
+      // Step 5: Filter by stock
+      if (filters.inStock !== null) {
+        filtered = filtered.filter((product) => product.in_stock === filters.inStock);
+      }
+
+      // Step 6: Filter by price range
+      filtered = filtered.filter(
+        (product) => product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
+      );
+
+      // Step 7: Sort by review count (highest first)
+      filtered.sort((a, b) => b.reviewCount - a.reviewCount);
+
+      // Optionally you can limit to top N (e.g., 10)
+      // filtered = filtered.slice(0, 10);
+
+      setFilteredProducts(filtered);
+    };
+
+    processProducts();
   }, [filters, allProducts]);
 
   return (
     <div>
       {/* Hero Section */}
       <PageSection padding="xl" className="h-screen relative overflow-hidden ">
-        <div 
-          className=" absolute inset-0 bg-cover bg-center bg-no-repeat"
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${blogAutumn})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/20 to-black/70" />
         <div className="relative z-10 text-center top-36">
           <h1 className="heading-xl mb-6 text-white">All Top Sellers</h1>
           <p className="text-body max-w-2xl mx-auto text-white">
-            Discover our complete collection of sustainable, eco-friendly products
-            designed to help you live more consciously and beautifully.
+            Discover our most-reviewed, most-loved eco-friendly products chosen by real customers.
           </p>
         </div>
       </PageSection>
@@ -99,9 +98,9 @@ const AllTopSellers = () => {
       <PageSection>
         <div className="space-y-8">
           <div className="text-center">
-            <SectionTitle 
-              title="Affordable Eco Products" 
-              subtitle="Quality sustainable items that fit any budget"
+            <SectionTitle
+              title="Top Rated Products"
+              subtitle="Sorted by number of customer reviews"
             />
           </div>
 
@@ -117,18 +116,20 @@ const AllTopSellers = () => {
             products={filteredProducts}
             loading={loading}
             onAddToCart={addToCart}
-            emptyTitle="No products found"
-            emptyDescription="Check back soon for more affordable options."
+            emptyTitle="No top sellers found"
+            emptyDescription="Products will appear here once they receive reviews."
             emptyAction={
-              <Button 
-                variant="outline" 
-                onClick={() => handleFiltersChange({
-                  category: null,
-                  sortBy: 'price',
-                  searchQuery: '',
-                  priceRange: [0, 2000000000000],
-                  inStock: null,
-                })}
+              <Button
+                variant="outline"
+                onClick={() =>
+                  handleFiltersChange({
+                    category: null,
+                    sortBy: 'price',
+                    searchQuery: '',
+                    priceRange: [0, 2000000000000],
+                    inStock: null,
+                  })
+                }
               >
                 Reset Filters
               </Button>
