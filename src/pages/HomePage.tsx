@@ -1,22 +1,53 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../hooks';
-import { setProducts } from '../store/slices/productsSlice';
+import { toast } from "@/components/ui/use-toast";
 import { useCart } from '../hooks/useCart';
 import { useShopProducts } from '../hooks/useShopProducts';
 import HeroSlider from '../components/ui/HeroSlider';
 import ProductGrid from '../components/product/ProductGrid';
 import SectionTitle from '../components/ui/SectionTitle';
-import productsHero from '../assets/products-hero.jpg';
-import ecoHome from '../assets/eco-home.jpg';
+import { EmailService } from '@/services/EmailService'; // ✅ import EmailService
 import blogAutumn from '../assets/blog-autumn.jpg';
 import blogCrafts from '../assets/blog-crafts.jpg';
 
 const HomePage = () => {
-  const dispatch = useAppDispatch();
   const { addToCart } = useCart();
   const { products: featuredProducts } = useShopProducts('Featured', 8);
   const { products: bestSellers } = useShopProducts('Top Sellers', 4);
+  const [loading, setLoading] = useState(false);
+
+
+  // ✅ state for email input
+  const [email, setEmail] = useState('');
+
+  const handleSubscribe = async () => {
+    if (!email.trim() || !email.includes("@")) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    const success = await EmailService.subscribe(email);
+    setLoading(false);
+
+    if (success) {
+      toast({
+        title: "Subscribed!",
+        description: "You have successfully joined our mailing list 🎉",
+      });
+      setEmail(""); // clear input
+    } else {
+      toast({
+        title: "Subscription Failed",
+        description: "Something went wrong. Please try again later.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div>
@@ -33,8 +64,6 @@ const HomePage = () => {
           <ProductGrid products={bestSellers} onAddToCart={addToCart} />
         </div>
       </section>
-
-      
 
       {/* Special Offers Section */}
       <section 
@@ -121,10 +150,15 @@ const HomePage = () => {
           <div className="max-w-md mx-auto flex">
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               className="flex-1 px-4 py-3 border border-border focus:outline-none focus:border-foreground"
             />
-            <button className="eco-button ml-2">
+            <button 
+              className="eco-button ml-2"
+              onClick={handleSubscribe}
+            >
               SUBSCRIBE
             </button>
           </div>

@@ -1,8 +1,43 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
+import { toast } from "@/components/ui/use-toast";
+import { EmailService } from "@/services/EmailService";
 
 const Footer = () => {
+
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubscribe = async () => {
+    if (!email.trim() || !email.includes("@")) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    const success = await EmailService.subscribe(email);
+    setLoading(false);
+
+    if (success) {
+      toast({
+        title: "Subscribed!",
+        description: "You have successfully joined our mailing list 🎉",
+      });
+      setEmail(""); // clear input
+    } else {
+      toast({
+        title: "Subscription Failed",
+        description: "Something went wrong. Please try again later.",
+        variant: "destructive",
+      });
+    }
+  };
   return (
     <footer className="bg-eco-forest text-background">
       <div className="container-eco py-16">
@@ -49,10 +84,17 @@ const Footer = () => {
               <Input
                 type="email"
                 placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="bg-transparent border-background/30 text-background placeholder:text-background/60 rounded-none flex-1"
+                disabled={loading}
               />
-              <Button className="eco-button-inverse ml-2 rounded-none">
-                →
+              <Button
+                className="eco-button-inverse ml-2 rounded-none"
+                onClick={handleSubscribe}
+                disabled={loading}
+              >
+                {loading ? "..." : "→"}
               </Button>
             </div>
           </div>
