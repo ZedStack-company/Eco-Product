@@ -12,33 +12,12 @@ import Grid from '@/components/ui/Grid';
 import { useCart } from '@/hooks/useCart';
 import { formatCurrency } from '@/utils/formatUtils';
 import { siteConfig } from '@/config/siteConfig';
+import { createStripeCheckoutSession } from '@/services/checkoutService';
 
 interface CheckoutFormData {
   // Contact Information
+  name: string;
   email: string;
-  
-  // Delivery Address
-  firstName: string;
-  lastName: string;
-  address: string;
-  apartment: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-  
-  // Shipping Method
-  shippingMethod: string;
-  
-  // Payment
-  paymentMethod: string;
-  cardNumber: string;
-  expiryDate: string;
-  securityCode: string;
-  nameOnCard: string;
-  
-  // Billing
-  billingAddressSame: boolean;
 }
 
 const CheckoutPage = () => {
@@ -47,22 +26,8 @@ const CheckoutPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   
   const [formData, setFormData] = useState<CheckoutFormData>({
+    name: '',
     email: '',
-    firstName: '',
-    lastName: '',
-    address: '',
-    apartment: '',
-    city: '',
-    state: '',
-    postalCode: '',
-    country: 'United States',
-    shippingMethod: 'standard',
-    paymentMethod: 'card',
-    cardNumber: '',
-    expiryDate: '',
-    securityCode: '',
-    nameOnCard: '',
-    billingAddressSame: true,
   });
 
   const updateFormData = (field: keyof CheckoutFormData, value: any) => {
@@ -71,7 +36,7 @@ const CheckoutPage = () => {
 
   const calculateShipping = () => {
     if (subtotal >= siteConfig.store.freeShippingThreshold) return 0;
-    return formData.shippingMethod === 'express' ? 19.99 : siteConfig.store.shippingRate;
+    return siteConfig.store.shippingRate;
   };
 
   const calculateTax = () => {
@@ -86,15 +51,30 @@ const CheckoutPage = () => {
     e.preventDefault();
     setIsProcessing(true);
     
-    // Simulate order processing
-    setTimeout(() => {
-      clearAllItems();
-      setIsProcessing(false);
-      navigate('/', { 
-        replace: true,
-        state: { orderSuccess: true }
+    try {
+      const session = await createStripeCheckoutSession({
+        items: items.map(i => ({ id: i.id, name: i.name, price: i.price, quantity: i.quantity })),
+        customer_email: formData.email || undefined,
+        currency: 'usd',
+        success_url: window.location.origin + '/payment-success?session_id={CHECKOUT_SESSION_ID}',
+        cancel_url: window.location.origin + '/payment-failed?session_id={CHECKOUT_SESSION_ID}',
+        metadata: {
+          customer_name: formData.name,
+          customer_email: formData.email,
+        }
       });
-    }, 3000);
+
+      if (session.url) {
+        window.location.href = session.url;
+      } else {
+        // Fallback: redirect via client (should not happen on latest Stripe)
+        navigate('/', { replace: true });
+      }
+    } catch (err) {
+      console.error(err);
+      setIsProcessing(false);
+      return;
+    }
   };
 
   if (items.length === 0) {
@@ -126,178 +106,25 @@ const CheckoutPage = () => {
             <div className="space-y-6">
               {/* Contact Information */}
               <FormSection title="Contact Information">
-                <FormField label="Email address" required>
-                  <Input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => updateFormData('email', e.target.value)}
-                    placeholder="Enter your email"
-                    required
-                  />
-                </FormField>
-              </FormSection>
-
-              {/* Delivery Address */}
-              <FormSection title="Delivery Address">
                 <div className="space-y-4">
-                  <Grid cols={2} gap="md">
-                    <FormField label="First name" required>
-                      <Input
-                        value={formData.firstName}
-                        onChange={(e) => updateFormData('firstName', e.target.value)}
-                        placeholder="First name"
-                        required
-                      />
-                    </FormField>
-                    <FormField label="Last name" required>
-                      <Input
-                        value={formData.lastName}
-                        onChange={(e) => updateFormData('lastName', e.target.value)}
-                        placeholder="Last name"
-                        required
-                      />
-                    </FormField>
-                  </Grid>
-
-                  <FormField label="Address" required>
+                  <FormField label="Full Name" required>
                     <Input
-                      value={formData.address}
-                      onChange={(e) => updateFormData('address', e.target.value)}
-                      placeholder="Street address"
+                      value={formData.name}
+                      onChange={(e) => updateFormData('name', e.target.value)}
+                      placeholder="Enter your full name"
                       required
                     />
                   </FormField>
 
-                  <FormField label="Apartment, suite, etc. (optional)">
+                  <FormField label="Email address" required>
                     <Input
-                      value={formData.apartment}
-                      onChange={(e) => updateFormData('apartment', e.target.value)}
-                      placeholder="Apartment, suite, etc."
-                    />
-                  </FormField>
-
-                  <Grid cols={1} responsive={{ sm: 3 }} gap="md">
-                    <FormField label="City" required>
-                      <Input
-                        value={formData.city}
-                        onChange={(e) => updateFormData('city', e.target.value)}
-                        placeholder="City"
-                        required
-                      />
-                    </FormField>
-                    <FormField label="State" required>
-                      <Select 
-                        value={formData.state} 
-                        onValueChange={(value) => updateFormData('state', value)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="State" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="CA">California</SelectItem>
-                          <SelectItem value="NY">New York</SelectItem>
-                          <SelectItem value="TX">Texas</SelectItem>
-                          <SelectItem value="FL">Florida</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormField>
-                    <FormField label="Postal code" required>
-                      <Input
-                        value={formData.postalCode}
-                        onChange={(e) => updateFormData('postalCode', e.target.value)}
-                        placeholder="Postal code"
-                        required
-                      />
-                    </FormField>
-                  </Grid>
-                </div>
-              </FormSection>
-
-              {/* Shipping Method */}
-              <FormSection title="Shipping Method">
-                <div className="space-y-3">
-                  <label className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/50">
-                    <input
-                      type="radio"
-                      name="shipping"
-                      value="standard"
-                      checked={formData.shippingMethod === 'standard'}
-                      onChange={(e) => updateFormData('shippingMethod', e.target.value)}
-                      className="text-primary"
-                    />
-                    <div className="flex-1 flex justify-between">
-                      <span>Standard Shipping (5-7 business days)</span>
-                      <span>{formatCurrency(siteConfig.store.shippingRate)}</span>
-                    </div>
-                  </label>
-                  <label className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/50">
-                    <input
-                      type="radio"
-                      name="shipping"
-                      value="express"
-                      checked={formData.shippingMethod === 'express'}
-                      onChange={(e) => updateFormData('shippingMethod', e.target.value)}
-                      className="text-primary"
-                    />
-                    <div className="flex-1 flex justify-between">
-                      <span>Express Shipping (2-3 business days)</span>
-                      <span>{formatCurrency(19.99)}</span>
-                    </div>
-                  </label>
-                </div>
-              </FormSection>
-
-              {/* Payment */}
-              <FormSection title="Payment">
-                <div className="space-y-4">
-                  <FormField label="Card number" required>
-                    <Input
-                      value={formData.cardNumber}
-                      onChange={(e) => updateFormData('cardNumber', e.target.value)}
-                      placeholder="1234 5678 9012 3456"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => updateFormData('email', e.target.value)}
+                      placeholder="Enter your email"
                       required
                     />
                   </FormField>
-
-                  <Grid cols={3} gap="md">
-                    <FormField label="Expiry date" required>
-                      <Input
-                        value={formData.expiryDate}
-                        onChange={(e) => updateFormData('expiryDate', e.target.value)}
-                        placeholder="MM/YY"
-                        required
-                      />
-                    </FormField>
-                    <FormField label="Security code" required>
-                      <Input
-                        value={formData.securityCode}
-                        onChange={(e) => updateFormData('securityCode', e.target.value)}
-                        placeholder="123"
-                        required
-                      />
-                    </FormField>
-                    <div></div>
-                  </Grid>
-
-                  <FormField label="Name on card" required>
-                    <Input
-                      value={formData.nameOnCard}
-                      onChange={(e) => updateFormData('nameOnCard', e.target.value)}
-                      placeholder="Full name as shown on card"
-                      required
-                    />
-                  </FormField>
-
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="billingAddress"
-                      checked={formData.billingAddressSame}
-                      onCheckedChange={(checked) => updateFormData('billingAddressSame', checked)}
-                    />
-                    <label htmlFor="billingAddress" className="text-sm">
-                      Billing address is the same as delivery address
-                    </label>
-                  </div>
                 </div>
               </FormSection>
             </div>
@@ -353,7 +180,7 @@ const CheckoutPage = () => {
                     type="submit" 
                     className="w-full eco-button" 
                     size="lg"
-                    disabled={isProcessing}
+                    disabled={isProcessing || !formData.name || !formData.email}
                   >
                     {isProcessing ? 'Processing Order...' : 'Complete Order'}
                   </Button>

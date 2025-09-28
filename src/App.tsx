@@ -35,8 +35,9 @@ import AdminLoginModal from './components/admin/AdminLoginModal';
 import NotFound from "./pages/NotFound";
 import { useAdmin } from './hooks/useAdmin';
 import ProtectedRoute from './components/ProtectedRoute';
+import PaymentSuccessPage from './pages/PaymentSuccessPage';
+import PaymentFailedPage from './pages/PaymentFailedPage';
 import ProductDetailPage from '@/pages/ProductDetailPage';
-import { Import } from 'lucide-react';
 
 const queryClient = new QueryClient();
 
@@ -107,6 +108,8 @@ useEffect(() => {
           <Route path="journal" element={<JournalPage />} />
           <Route path="theme-features" element={<ThemeFeaturesPage />} />
           <Route path="checkout" element={<CheckoutPage />} />
+          <Route path="payment-success" element={<PaymentSuccessPage />} />
+          <Route path="payment-failed" element={<PaymentFailedPage />} />
           <Route path="returns" element={<CheckoutPage />} />
           <Route path="shipping" element={<CheckoutPage />} />
           <Route path="contact" element={<CheckoutPage />} />
